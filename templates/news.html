@@ -1,0 +1,37 @@
+<!--  наследуемся от шаблона default.html, который мы создавали для flatpages -->
+{% extends 'flatpages/default.html' %}
+
+<!-- Название у нас будет news -->
+{% block title %}
+News
+{% endblock title %}
+
+<!-- В контенте на странице мы выводим все новости -->
+{% block content %}
+    <h1>Все новости</h1>
+    <hr>
+    {% if news %}
+        <table>
+            <tr>
+                <td>Тип публикации</td>
+                <td>Время создания</td>
+                <td>Название</td>
+                <td>Содержание</td>
+                <td>Рейтинг</td>
+                <td>Аатор</td>
+            </tr>
+            {% for new in news %}
+            <tr>
+                <td>{{ new.type }}</td>
+                <td>{{ new.created_at }}</td>
+                <td>{{ new.title }}</td>
+                <td>{{ new.text | truncatechars:5 }}</td>
+                <td>{{ new.rating }}</td>
+                <td>{{ new.author_id }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+    {% else %}
+        <h2>Новостей нет</h2>
+    {% endif %}
+{% endblock content %}
