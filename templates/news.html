@@ -1,6 +1,8 @@
 <!--  наследуемся от шаблона default.html, который мы создавали для flatpages -->
 {% extends 'flatpages/default.html' %}
 
+{% load custom_filters %}
+
 <!-- Название у нас будет news -->
 {% block title %}
 News
@@ -25,7 +27,7 @@ News
                 <td>{{ new.type }}</td>
                 <td>{{ new.created_at }}</td>
                 <td>{{ new.title }}</td>
-                <td>{{ new.text | truncatechars:5 }}</td>
+                <td>{{ new.text | truncatechars:20 }}</td>
                 <td>{{ new.rating }}</td>
                 <td>{{ new.author_id }}</td>
             </tr>
