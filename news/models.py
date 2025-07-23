@@ -59,7 +59,7 @@ class Post(models.Model):
         return self.text[:124] + '...' if len(self.text) > 124 else self.text
 
     def __str__(self):
-        return f"{self.type.title()}: {self.title}"
+        return f"{self.type}, {self.created_at}, {self.title}, {self.text}, {self.rating}, {self.author}"
 
 
 class PostCategory(models.Model):
