@@ -34,9 +34,11 @@ class Category(models.Model):
 
 
 class Post(models.Model):
+    ARTICLE = 'article'
+    NEWS = 'news'
     POST_TYPES = (
-        ('article', 'Статья'),
-        ('news', 'Новость'),
+        (ARTICLE, 'Статья'),
+        (NEWS, 'Новость'),
     )
 
     author = models.ForeignKey(Author, on_delete=models.CASCADE)
