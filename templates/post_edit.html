@@ -1,0 +1,32 @@
+{% extends 'flatpages/default.html' %}
+
+{% block title %}
+{{ object.pk|yesno:"Редактирование,Создание" }} публикации
+{% endblock title %}
+
+{% block content %}
+<h2>{{ object.pk|yesno:"Редактирование,Создание" }} публикации</h2>
+<hr>
+
+<form method="post">
+    {% csrf_token %}
+    
+    <div style="margin-bottom: 15px;">
+        <label for="{{ form.title.id_for_label }}">Заголовок:</label><br>
+        {{ form.title }}
+    </div>
+    
+    <div style="margin-bottom: 15px;">
+        <label for="{{ form.text.id_for_label }}">Текст:</label><br>
+        {{ form.text }}
+    </div>
+    
+    <div style="margin-bottom: 15px;">
+        <label>Категории:</label><br>
+        {{ form.categories }}
+    </div>
+    
+    <button type="submit" class="btn btn-success">Сохранить</button>
+    <a href="{% url 'news:post_list' %}" class="btn btn-secondary">Отмена</a>
+</form>
+{% endblock content %}

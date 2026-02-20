@@ -1,0 +1,49 @@
+{% extends 'flatpages/default.html' %}
+
+{% block title %}
+Регистрация
+{% endblock title %}
+
+{% block content %}
+<h2>Регистрация нового пользователя</h2>
+<hr>
+
+<form method="post">
+    {% csrf_token %}
+    
+    <div style="margin-bottom: 15px;">
+        <label for="id_email">Email:</label><br>
+        <input type="email" name="email" id="id_email" 
+               style="width: 300px; padding: 5px;"
+               value="{{ form.email.value|default:'' }}">
+    </div>
+    
+    <div style="margin-bottom: 15px;">
+        <label for="id_username">Имя пользователя:</label><br>
+        <input type="text" name="username" id="id_username" 
+               style="width: 300px; padding: 5px;"
+               value="{{ form.username.value|default:'' }}">
+    </div>
+    
+    <div style="margin-bottom: 15px;">
+        <label for="id_password1">Пароль:</label><br>
+        <input type="password" name="password1" id="id_password1" 
+               style="width: 300px; padding: 5px;">
+    </div>
+    
+    <div style="margin-bottom: 15px;">
+        <label for="id_password2">Подтверждение пароля:</label><br>
+        <input type="password" name="password2" id="id_password2" 
+               style="width: 300px; padding: 5px;">
+    </div>
+    
+    {% if form.errors %}
+    <div style="color: red; margin-bottom: 15px;">
+        {{ form.errors }}
+    </div>
+    {% endif %}
+    
+    <button type="submit" class="btn btn-success">Зарегистрироваться</button>
+    <a href="{% url 'account_login' %}" class="btn btn-secondary">Войти</a>
+</form>
+{% endblock content %}

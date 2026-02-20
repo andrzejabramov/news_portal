@@ -20,19 +20,52 @@ News
                 <td>Название</td>
                 <td>Содержание</td>
                 <td>Рейтинг</td>
-                <td>Аатор</td>
+                <td>Автор</td>
             </tr>
             {% for new in news %}
             <tr>
-                <td>{{ new.type }}</td>
-                <td>{{ new.created_at }}</td>
+                <td>{{ new.get_type_display }}</td>
+                <td>{{ new.created_at|date:"d.m.Y H:i" }}</td>
                 <td>{{ new.title }}</td>
                 <td>{{ new.text | truncatechars:20 }}</td>
                 <td>{{ new.rating }}</td>
-                <td>{{ new.author_id }}</td>
+                <td>{{ new.author.user.username }}</td>
             </tr>
             {% endfor %}
         </table>
+
+        <!-- БЛОК ПАГИНАЦИИ (вставлен сюда) -->
+        {% if is_paginated %}
+        <div class="pagination" style="margin-top: 20px;">
+            <span>Страница {{ page_obj.number }} из {{ page_obj.paginator.num_pages }}</span>
+
+            {% if page_obj.has_previous %}
+                <a href="?page=1">« Первая</a>
+                <a href="?page={{ page_obj.previous_page_number }}">‹ Назад</a>
+            {% else %}
+                <span class="disabled">« Первая</span>
+                <span class="disabled">‹ Назад</span>
+            {% endif %}
+
+            {% for num in page_obj.paginator.page_range %}
+                {% if page_obj.number == num %}
+                    <span class="current" style="font-weight: bold; margin: 0 5px;">{{ num }}</span>
+                {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                    <a href="?page={{ num }}" style="margin: 0 5px;">{{ num }}</a>
+                {% endif %}
+            {% endfor %}
+
+            {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}">Вперед ›</a>
+                <a href="?page={{ page_obj.paginator.num_pages }}">Последняя »</a>
+            {% else %}
+                <span class="disabled">Вперед ›</span>
+                <span class="disabled">Последняя »</span>
+            {% endif %}
+        </div>
+        {% endif %}
+        <!-- КОНЕЦ БЛОКА ПАГИНАЦИИ -->
+
     {% else %}
         <h2>Новостей нет</h2>
     {% endif %}

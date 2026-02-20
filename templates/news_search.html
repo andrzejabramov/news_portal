@@ -1,0 +1,94 @@
+{% extends 'flatpages/default.html' %}
+{% load custom_filters %}
+
+{% block title %}
+Поиск новостей
+{% endblock title %}
+
+{% block content %}
+<h2>Поиск новостей</h2>
+<hr>
+
+<!-- Форма фильтрации -->
+<form method="get" class="mb-4">
+    <div style="margin-bottom: 15px;">
+        <label for="id_title">Название:</label><br>
+        <input type="text" name="title" id="id_title"
+               value="{{ request.GET.title }}"
+               placeholder="Поиск по заголовку"
+               style="width: 300px; padding: 5px;">
+    </div>
+
+    <div style="margin-bottom: 15px;">
+        <label for="id_author">Автор:</label><br>
+        <input type="text" name="author" id="id_author"
+               value="{{ request.GET.author }}"
+               placeholder="Имя автора"
+               style="width: 300px; padding: 5px;">
+    </div>
+
+    <div style="margin-bottom: 15px;">
+        <label for="id_created_after">Дата от:</label><br>
+        <input type="date" name="created_after" id="id_created_after"
+               value="{{ request.GET.created_after }}"
+               style="padding: 5px;">
+    </div>
+
+    <button type="submit" class="btn btn-primary">Найти</button>
+    <a href="{% url 'news:search' %}" class="btn btn-secondary">Сбросить</a>
+</form>
+
+<!-- Результаты поиска -->
+{% if news %}
+    <p>Найдено новостей: {{ page_obj.paginator.count }}</p>
+    <table>
+        <tr>
+            <td>Тип публикации</td>
+            <td>Время создания</td>
+            <td>Название</td>
+            <td>Содержание</td>
+            <td>Рейтинг</td>
+            <td>Автор</td>
+        </tr>
+        {% for item in news %}
+        <tr>
+            <td>{{ item.get_type_display }}</td>
+            <td>{{ item.created_at|date:"d.m.Y H:i" }}</td>
+            <td>{{ item.title }}</td>
+            <td>{{ item.text|truncatechars:20 }}</td>
+            <td>{{ item.rating }}</td>
+            <td>{{ item.author.user.username }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+
+    <!-- Пагинация с сохранением фильтров -->
+    {% if is_paginated %}
+    <div class="pagination" style="margin-top: 20px;">
+        <span>Страница {{ page_obj.number }} из {{ page_obj.paginator.num_pages }}</span>
+
+        {% if page_obj.has_previous %}
+            <a href="?page=1&{{ request.GET.urlencode|remove:'page' }}">« Первая</a>
+            <a href="?page={{ page_obj.previous_page_number }}&{{ request.GET.urlencode|remove:'page' }}">‹ Назад</a>
+        {% endif %}
+
+        {% for num in page_obj.paginator.page_range %}
+            {% if page_obj.number == num %}
+                <span class="current" style="font-weight: bold; margin: 0 5px;">{{ num }}</span>
+            {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                <a href="?page={{ num }}&{{ request.GET.urlencode|remove:'page' }}" style="margin: 0 5px;">{{ num }}</a>
+            {% endif %}
+        {% endfor %}
+
+        {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}&{{ request.GET.urlencode|remove:'page' }}">Вперед ›</a>
+            <a href="?page={{ page_obj.paginator.num_pages }}&{{ request.GET.urlencode|remove:'page' }}">Последняя »</a>
+        {% endif %}
+    </div>
+    {% endif %}
+
+{% else %}
+    <h3>Ничего не найдено</h3>
+    <p>Попробуйте изменить параметры поиска.</p>
+{% endif %}
+{% endblock content %}

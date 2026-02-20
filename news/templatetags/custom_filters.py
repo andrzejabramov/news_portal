@@ -1,29 +1,43 @@
+# news/templatetags/custom_filters.py
 from django import template
 import re
 
 register = template.Library()
 
-# Список нежелательных слов
-BAD_WORDS = {
-    'редиска',
-    'дурак',
-    'идиот',
-    # добавьте свои слова
-}
 
-@register.filter(name='censor')
+# ← Фильтр для пагинации (сохраняет параметры в URL)
+@register.filter
+def remove(value, arg):
+    """Удаляет параметр из QUERY_STRING"""
+    import urllib.parse
+    params = urllib.parse.parse_qs(value)
+    params.pop(arg, None)
+    return urllib.parse.urlencode(params, doseq=True)
+
+
+# ← Фильтр цензуры (заменяет плохие слова на *)
+@register.filter
 def censor(value):
-    """
-    Заменяет буквы нежелательных слов на '*'.
-    """
-    if not isinstance(value, str):
+    """Заменяет запрещённые слова на звёздочки"""
+    if not value:
         return value
 
-    for word in BAD_WORDS:
-        # Игнорируем регистр, заменяем каждую букву слова на '*'
-        pattern = re.compile(re.escape(word), re.IGNORECASE)
-        def replace_func(match):
-            return match.group().replace(match.group(), '*' * len(match.group()))
-        value = pattern.sub(replace_func, value)
+    # Список слов для цензуры (добавляй свои)
+    bad_words = ['дурак', 'идиот', 'редиска', 'болван']
 
-    return value
+    result = value
+    for word in bad_words:
+        # Замена: оставляем первую и последнюю букву, остальные *
+        if len(word) > 2:
+            censored = word[0] + '*' * (len(word) - 2) + word[-1]
+        else:
+            censored = '*' * len(word)
+        # Регексп для замены с учётом регистра
+        result = re.sub(
+            re.escape(word),
+            censored,
+            result,
+            flags=re.IGNORECASE
+        )
+
+    return result
