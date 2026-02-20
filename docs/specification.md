@@ -606,7 +606,7 @@ python manage.py runserver
 
 **Разработчик:** Абрамов Андрей  
 **Email:** npkap@mail.ru  
-**Репозиторий:** https://github.com/andrzejabramov/NewsPortal
+**Репозиторий:** https://github.com/andrzejabramov/news_portal.git
 
 ---
 
