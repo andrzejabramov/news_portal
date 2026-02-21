@@ -1,0 +1,18 @@
+{% extends 'flatpages/default.html' %}
+
+{% block title %}
+Стать автором
+{% endblock title %}
+
+{% block content %}
+<h2>Стать автором публикаций</h2>
+<hr>
+
+<p>Хотите создавать новости и статьи? Нажмите кнопку ниже, чтобы получить права автора.</p>
+
+<form method="post">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-success">Стать автором</button>
+    <a href="{% url 'news:post_list' %}" class="btn btn-secondary">Отмена</a>
+</form>
+{% endblock content %}

@@ -1,10 +1,8 @@
-# news/views.py
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.views.generic import ListView, DetailView
 from django_filters.views import FilterView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
-from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
-from datetime import datetime
 from .models import Post
 from .filters import PostFilter
 from .forms import PostForm
@@ -19,6 +17,11 @@ class PostList(ListView):
 
     def get_queryset(self):
         return Post.objects.filter(type=Post.NEWS)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['is_author'] = self.request.user.groups.filter(name='authors').exists()
+        return context
 
 
 class PostDetail(DetailView):
@@ -35,7 +38,12 @@ class PostSearch(FilterView):
     paginate_by = 10
 
 
-class PostCreate(LoginRequiredMixin, CreateView):
+class PostCreate(
+    PermissionRequiredMixin,
+    LoginRequiredMixin,
+    CreateView,
+):
+    permission_required = 'news.add_post'
     form_class = PostForm
     model = Post
     template_name = 'post_edit.html'
@@ -55,7 +63,12 @@ class PostCreate(LoginRequiredMixin, CreateView):
         return reverse_lazy('news:post_detail', kwargs={'pk': self.object.pk})
 
 
-class PostUpdate(LoginRequiredMixin, UpdateView):
+class PostUpdate(
+    PermissionRequiredMixin,
+    LoginRequiredMixin,
+    UpdateView
+):
+    permission_required = 'news.change_post'
     form_class = PostForm
     model = Post
     template_name = 'post_edit.html'

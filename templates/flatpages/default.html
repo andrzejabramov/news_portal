@@ -1,6 +1,60 @@
     <meta charset="UTF-8">
     <title>{% block title %}Новости{% endblock %}</title>
 <body>
+    <!-- Навигация -->
+    <nav style="background: #333; padding: 15px; margin-bottom: 20px;">
+      <div style="max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center;">
+
+        <!-- Логотип / Название -->
+        <a href="{% url 'news:post_list' %}" style="color: white; text-decoration: none; font-size: 18px; font-weight: bold;">
+          📰 News Portal
+        </a>
+
+        <!-- Меню -->
+        <div style="display: flex; gap: 15px; align-items: center;">
+
+          <!-- Ссылка на новости (всем) -->
+          <a href="{% url 'news:post_list' %}" style="color: white; text-decoration: none;">Все новости</a>
+
+          {% if user.is_authenticated %}
+            <!-- Для авторизованных -->
+            <span style="color: #ffd700;">Привет, {{ user.username }}!</span>
+
+            {% if user.groups.all %}
+              <span style="color: #aaa; font-size: 14px;">
+                ({% for group in user.groups.all %}{{ group.name }}{% if not forloop.last %}, {% endif %}{% endfor %})
+              </span>
+            {% endif %}
+
+            {% if is_author %}
+              <a href="{% url 'news:news_create' %}" style="color: #90EE90; text-decoration: none;">+ Новая новость</a>
+            {% else %}
+              <a href="{% url 'become_author' %}" style="color: #FFD700; text-decoration: none;">Стать автором</a>
+            {% endif %}
+
+            <a href="{% url 'account_logout' %}" style="color: #ff6b6b; text-decoration: none;">Выйти</a>
+          {% else %}
+            <!-- Для гостей -->
+            <a href="{% url 'account_login' %}" style="color: #90EE90; text-decoration: none;">Войти</a>
+            <a href="{% url 'account_signup' %}" style="color: #87CEEB; text-decoration: none;">Регистрация</a>
+          {% endif %}
+
+        </div>
+      </div>
+    </nav>
+
+    <!-- Сообщения (flash messages) -->
+    {% if messages %}
+      <div style="max-width: 1200px; margin: 0 auto 20px;">
+        {% for message in messages %}
+          <div style="padding: 10px; background: {% if message.tags == 'error' %}#ffe0e0{% else %}#e0ffe0{% endif %}; border-radius: 5px; margin-bottom: 10px;">
+            {{ message }}
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    <!-- Основной контент -->
     <main>
         {% block content %}
         {% endblock %}

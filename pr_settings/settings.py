@@ -61,7 +61,6 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-
     'allauth.account.middleware.AccountMiddleware',
 ]
 
@@ -154,6 +153,27 @@ LOGOUT_REDIRECT_URL = '/news/'
 
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_UNIQUE_EMAIL = True
-ACCOUNT_USERNAME_REQUIRED = False
-ACCOUNT_AUTHENTICATION_METHOD = 'email'
+# ACCOUNT_USERNAME_REQUIRED = False
+# ACCOUNT_AUTHENTICATION_METHOD = 'email'
 ACCOUNT_EMAIL_VERIFICATION = 'none'
+ACCOUNT_LOGIN_METHODS = {'email', 'username'}
+ACCOUNT_SIGNUP_FIELDS = ['email*', 'password1*', 'password2*']
+
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {'console': {'class': 'logging.StreamHandler'}},
+    'root': {'handlers': ['console'], 'level': 'DEBUG'},
+    'loggers': {
+        'allauth': {'level': 'DEBUG', 'handlers': ['console'], 'propagate': False},
+        'allauth.socialaccount': {'level': 'DEBUG', 'handlers': ['console'], 'propagate': False},
+    },
+}
+
+SOCIALACCOUNT_AUTO_SIGNUP = True
+SOCIALACCOUNT_QUERY_EMAIL = True
+SOCIALACCOUNT_EMAIL_AUTHENTICATION = True
+SOCIALACCOUNT_EMAIL_AUTHENTICATION_AUTO_CONNECT = True
+# Использовать наш адаптер для авто-привязки
+SOCIALACCOUNT_ADAPTER = 'accounts.adapter.AutoConnectSocialAccountAdapter'

@@ -1,0 +1,45 @@
+{% extends 'flatpages/default.html' %}
+
+{% block content %}
+<h2>Привязка Yandex</h2>
+
+{% if form.errors %}
+<div style="color: red; margin: 10px 0; padding: 10px; background: #ffe0e0; border-radius: 5px;">
+    <strong>Ошибки:</strong>
+    <ul>
+    {% for field in form %}
+        {% for error in field.errors %}
+            <li>{{ field.label }}: {{ error }}</li>
+        {% endfor %}
+    {% endfor %}
+    {% for error in form.non_field_errors %}
+        <li>{{ error }}</li>
+    {% endfor %}
+    </ul>
+</div>
+{% endif %}
+
+{% if form.non_field_errors %}
+<div style="color: red; margin: 10px 0; padding: 10px; background: #ffe0e0;">
+    <strong>❌ Общая ошибка:</strong>
+    <ul>
+    {% for error in form.non_field_errors %}
+        <li>{{ error }}</li>
+    {% endfor %}
+    </ul>
+</div>
+{% endif %}
+
+<div style="background: #f0f0f0; padding: 10px; margin: 10px 0;">
+    <strong>Отладка формы:</strong><br>
+    {% for field in form %}
+        {{ field.name }}: "{{ field.value }}"<br>
+    {% endfor %}
+</div>
+
+<form method="post" action="{% url 'socialaccount_signup' %}">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Sign Up</button>
+</form>
+{% endblock %}

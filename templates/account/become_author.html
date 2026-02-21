@@ -1,0 +1,35 @@
+{% extends 'flatpages/default.html' %}
+
+{% block title %}
+Стать автором
+{% endblock title %}
+
+{% block content %}
+<h2>Стать автором публикаций</h2>
+<hr>
+
+<p>Хотите создавать новости и статьи? Нажмите кнопку ниже, чтобы получить права автора.</p>
+
+<div style="background: #f5f5f5; padding: 20px; margin: 20px 0; border-radius: 5px;">
+    <h3>Что вы получите:</h3>
+    <ul>
+        <li>✅ Создание новостей</li>
+        <li>✅ Создание статей</li>
+        <li>✅ Редактирование своих публикаций</li>
+    </ul>
+</div>
+
+{% if messages %}
+<div style="color: green; margin-bottom: 15px;">
+    {% for message in messages %}
+        <p>{{ message }}</p>
+    {% endfor %}
+</div>
+{% endif %}
+
+<form method="post">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-success">Стать автором</button>
+    <a href="{% url 'news:post_list' %}" class="btn btn-secondary">Отмена</a>
+</form>
+{% endblock content %}
