@@ -1,67 +1,67 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Новости{% endblock %}</title>
+    <link rel="stylesheet" href="/static/css/navigation.css">
+</head>
 <body>
     <!-- Навигация -->
-    <nav style="background: #333; padding: 15px; margin-bottom: 20px;">
-      <div style="max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center;">
+    <nav class="navbar">
+      <div class="navbar-container">
 
-        <!-- Логотип / Название -->
-        <a href="{% url 'news:post_list' %}" style="color: white; text-decoration: none; font-size: 18px; font-weight: bold;">
+        <!-- Логотип -->
+        <a href="{% url 'news:post_list' %}" class="navbar-brand">
           📰 News Portal
         </a>
 
         <!-- Меню -->
-        <div style="display: flex; gap: 15px; align-items: center;">
-
-          <!-- Ссылка на новости (всем) -->
-          <a href="{% url 'news:post_list' %}" style="color: white; text-decoration: none;">Все новости</a>
+        <div class="navbar-menu">
+          <a href="{% url 'news:post_list' %}">Все новости</a>
 
           {% if user.is_authenticated %}
-            <!-- Для авторизованных -->
-            <span style="color: #ffd700;">Привет, {{ user.username }}!</span>
+            <span class="navbar-username">Привет, {{ user.username }}!</span>
 
             {% if user.groups.all %}
-              <span style="color: #aaa; font-size: 14px;">
+              <span class="navbar-group">
                 ({% for group in user.groups.all %}{{ group.name }}{% if not forloop.last %}, {% endif %}{% endfor %})
               </span>
             {% endif %}
 
             {% if is_author %}
-              <a href="{% url 'news:news_create' %}" style="color: #90EE90; text-decoration: none;">+ Новая новость</a>
+              <a href="{% url 'news:news_create' %}" class="navbar-link-primary">+ Новая новость</a>
             {% else %}
-              <a href="{% url 'become_author' %}" style="color: #FFD700; text-decoration: none;">Стать автором</a>
+              <a href="{% url 'accounts:become_author' %}" class="navbar-link-warning">Стать автором</a>
             {% endif %}
 
-            <a href="{% url 'account_logout' %}" style="color: #ff6b6b; text-decoration: none;">Выйти</a>
+            <a href="{% url 'account_logout' %}" class="navbar-link-danger">Выйти</a>
           {% else %}
-            <!-- Для гостей -->
-            <a href="{% url 'account_login' %}" style="color: #90EE90; text-decoration: none;">Войти</a>
-            <a href="{% url 'account_signup' %}" style="color: #87CEEB; text-decoration: none;">Регистрация</a>
+            <a href="{% url 'account_login' %}" class="navbar-link-success">Войти</a>
+            <a href="{% url 'account_signup' %}" class="navbar-link-info">Регистрация</a>
           {% endif %}
-
         </div>
       </div>
     </nav>
 
-    <!-- Сообщения (flash messages) -->
+    <!-- Сообщения -->
     {% if messages %}
-      <div style="max-width: 1200px; margin: 0 auto 20px;">
+      <div class="messages">
         {% for message in messages %}
-          <div style="padding: 10px; background: {% if message.tags == 'error' %}#ffe0e0{% else %}#e0ffe0{% endif %}; border-radius: 5px; margin-bottom: 10px;">
+          <div class="message {{ message.tags }}">
             {{ message }}
           </div>
         {% endfor %}
       </div>
     {% endif %}
 
-    <!-- Основной контент -->
-    <main>
-        {% block content %}
-        {% endblock %}
+    <!-- Контент -->
+    <main class="container">
+        {% block content %}{% endblock %}
     </main>
 
-    <footer>
-        <p>&copy; 2025</p>
+    <footer class="footer">
+        <p>&copy; 2026 News Portal</p>
     </footer>
 </body>
 </html>

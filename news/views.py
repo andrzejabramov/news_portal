@@ -73,6 +73,10 @@ class PostUpdate(
     model = Post
     template_name = 'post_edit.html'
 
+    def get_queryset(self):
+        # ← Защита: редактировать можно только свои посты
+        return Post.objects.filter(author__user=self.request.user)
+
     def get_success_url(self):
         return reverse_lazy('news:post_detail', kwargs={'pk': self.object.pk})
 

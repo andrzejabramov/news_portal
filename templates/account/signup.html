@@ -1,50 +1,93 @@
 {% extends 'flatpages/default.html' %}
 {% load socialaccount %}
 
-{% block title %}
-Регистрация
-{% endblock title %}
+{% block title %}Регистрация{% endblock %}
 
 {% block content %}
-<h2>Регистрация нового пользователя</h2>
-<hr>
+<div class="auth-card">
+    <h2>Регистрация нового пользователя</h2>
+    <hr>
 
-<form method="post">
-    {% csrf_token %}
-    
-    <div style="margin-bottom: 15px;">
-        <label for="id_email">Email:</label><br>
-        <input type="email" name="email" id="id_email" 
-               style="width: 300px; padding: 5px;"
-               value="{{ form.email.value|default:'' }}">
-    </div>
-    
-    <div style="margin-bottom: 15px;">
-        <label for="id_username">Имя пользователя:</label><br>
-        <input type="text" name="username" id="id_username" 
-               style="width: 300px; padding: 5px;"
-               value="{{ form.username.value|default:'' }}">
-    </div>
-    
-    <div style="margin-bottom: 15px;">
-        <label for="id_password1">Пароль:</label><br>
-        <input type="password" name="password1" id="id_password1" 
-               style="width: 300px; padding: 5px;">
-    </div>
-    
-    <div style="margin-bottom: 15px;">
-        <label for="id_password2">Подтверждение пароля:</label><br>
-        <input type="password" name="password2" id="id_password2" 
-               style="width: 300px; padding: 5px;">
-    </div>
-    
-    {% if form.errors %}
-    <div style="color: red; margin-bottom: 15px;">
-        {{ form.errors }}
+    <!-- Блок ошибок -->
+    {% if form.errors or form.non_field_errors %}
+    <div class="error-block">
+        <strong>⚠️ Исправьте ошибки:</strong>
+        <ul>
+        {% for field in form %}
+            {% for error in field.errors %}
+                <li>{{ field.label }}: {{ error }}</li>
+            {% endfor %}
+        {% endfor %}
+        {% for error in form.non_field_errors %}
+            <li>{{ error }}</li>
+        {% endfor %}
+        </ul>
     </div>
     {% endif %}
-    
-    <button type="submit" class="btn btn-success">Зарегистрироваться</button>
-    <a href="{% url 'account_login' %}" class="btn btn-secondary">Войти</a>
-</form>
-{% endblock content %}
+
+    <form method="post" class="auth-form">
+        {% csrf_token %}
+
+        <!-- Email -->
+        <div class="form-group">
+            <label for="id_email">
+                Email
+                <span class="required">*</span>
+            </label>
+            <input type="email" name="email" id="id_email"
+                   value="{{ form.email.value|default:'' }}"
+                   placeholder="your@email.com"
+                   class="{% if form.email.errors %}error{% endif %}">
+        </div>
+
+        <!-- Username (ЛОГИН) -->
+        <div class="form-group">
+            <label for="id_username">
+                Имя пользователя
+                <span class="required">*</span>
+            </label>
+            <input type="text" name="username" id="id_username"
+                   value="{{ form.username.value|default:'' }}"
+                   placeholder="Логин"
+                   class="{% if form.username.errors %}error{% endif %}">
+        </div>
+
+        <!-- Password 1 -->
+        <div class="form-group">
+            <label for="id_password1">
+                Пароль
+                <span class="required">*</span>
+            </label>
+            <input type="password" name="password1" id="id_password1"
+                   placeholder="Минимум 8 символов"
+                   class="{% if form.password1.errors %}error{% endif %}">
+            <small class="form-help">Используйте буквы, цифры и специальные символы</small>
+        </div>
+
+        <!-- Password 2 -->
+        <div class="form-group">
+            <label for="id_password2">
+                Подтверждение пароля
+                <span class="required">*</span>
+            </label>
+            <input type="password" name="password2" id="id_password2"
+                   placeholder="Повторите пароль"
+                   class="{% if form.password2.errors %}error{% endif %}">
+        </div>
+
+        <button type="submit" class="btn btn-success btn-block">Зарегистрироваться</button>
+    </form>
+
+    <div class="auth-divider">
+        <span>или</span>
+    </div>
+
+    <a href="{% provider_login_url 'yandex' %}" class="btn btn-yandex btn-block">
+        🟡 Войти через Yandex
+    </a>
+
+    <p class="auth-links">
+        Уже есть аккаунт? <a href="{% url 'account_login' %}">Войти</a>
+    </p>
+</div>
+{% endblock %}

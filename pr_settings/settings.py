@@ -153,12 +153,14 @@ LOGOUT_REDIRECT_URL = '/news/'
 
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_UNIQUE_EMAIL = True
-# ACCOUNT_USERNAME_REQUIRED = False
+ACCOUNT_USERNAME_REQUIRED = True
 # ACCOUNT_AUTHENTICATION_METHOD = 'email'
 ACCOUNT_EMAIL_VERIFICATION = 'none'
 ACCOUNT_LOGIN_METHODS = {'email', 'username'}
-ACCOUNT_SIGNUP_FIELDS = ['email*', 'password1*', 'password2*']
-
+ACCOUNT_SIGNUP_FIELDS = ['email*', 'username*', 'password1*', 'password2*']
+# Кастомная форма регистрации
+# ACCOUNT_SIGNUP_FORM_CLASS = 'accounts.forms.CustomSignupForm'
+ACCOUNT_ADAPTER = 'accounts.adapter.CustomAccountAdapter'
 
 LOGGING = {
     'version': 1,
