@@ -1,0 +1,27 @@
+{% extends 'flatpages/default.html' %}
+
+{% block title %}Выход из системы{% endblock %}
+
+{% block content %}
+<div class="auth-card">
+    <h2>Выход из системы</h2>
+    <hr>
+    
+    <p style="margin-bottom: 20px; color: #666; text-align: center;">
+        Вы уверены, что хотите выйти из аккаунта?<br>
+        <small>Вам потребуется войти снова, чтобы получить доступ к личным данным.</small>
+    </p>
+
+    <!-- Форма подтверждения -->
+    <form method="post" class="auth-form">
+        {% csrf_token %}
+        
+        <button type="submit" class="btn btn-danger btn-block">Да, выйти</button>
+    </form>
+    
+    <!-- Отмена -->
+    <p class="auth-links">
+        <a href="{% url 'news:post_list' %}">← Отмена, остаться на сайте</a>
+    </p>
+</div>
+{% endblock %}

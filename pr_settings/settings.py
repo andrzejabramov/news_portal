@@ -113,6 +113,14 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+AUTH_USERNAME_VALIDATORS = [
+    {
+        'NAME': 'django.contrib.auth.validators.UnicodeUsernameValidator',
+    },
+]
+
+# ← ← ← И ЭТО (минимальная длина username):
+ACCOUNT_USERNAME_MIN_LENGTH = 3
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.2/topics/i18n/
@@ -159,8 +167,14 @@ ACCOUNT_EMAIL_VERIFICATION = 'none'
 ACCOUNT_LOGIN_METHODS = {'email', 'username'}
 ACCOUNT_SIGNUP_FIELDS = ['email*', 'username*', 'password1*', 'password2*']
 # Кастомная форма регистрации
+# ACCOUNT_FORMS = {'signup': 'accounts.forms.CustomSignupForm',}
 # ACCOUNT_SIGNUP_FORM_CLASS = 'accounts.forms.CustomSignupForm'
-ACCOUNT_ADAPTER = 'accounts.adapter.CustomAccountAdapter'
+# ACCOUNT_ADAPTER = 'accounts.adapter.CustomAccountAdapter'
+
+# ← Язык (обязательно для русских ошибок):
+LANGUAGE_CODE = 'ru'
+USE_I18N = True
+LOCALE_PATHS = [BASE_DIR / 'locale']
 
 LOGGING = {
     'version': 1,

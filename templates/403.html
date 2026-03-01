@@ -1,0 +1,15 @@
+{% extends 'flatpages/default.html' %}
+
+{% block title %}Доступ запрещён{% endblock %}
+
+{% block content %}
+<div style="max-width: 600px; margin: 50px auto; text-align: center; padding: 30px; background: #fff3f3; border: 1px solid #ffcdd2; border-radius: 8px;">
+    <h1 style="color: #c62828;">🔒 Доступ запрещён</h1>
+    <p style="font-size: 1.1rem; margin: 20px 0;">
+        {{ exception|default:"У вас недостаточно прав для выполнения этого действия." }}
+    </p>
+    <a href="{% url 'news:post_list' %}" style="display: inline-block; padding: 10px 20px; background: #4361ee; color: white; text-decoration: none; border-radius: 5px;">
+        ← Вернуться к новостям
+    </a>
+</div>
+{% endblock %}

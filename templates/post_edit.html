@@ -1,32 +1,91 @@
 {% extends 'flatpages/default.html' %}
 
 {% block title %}
-{{ object.pk|yesno:"Редактирование,Создание" }} публикации
-{% endblock title %}
+    {% if object %}Редактирование{% else %}Создание{% endif %} публикации
+{% endblock %}
 
 {% block content %}
-<h2>{{ object.pk|yesno:"Редактирование,Создание" }} публикации</h2>
-<hr>
+<div class="auth-card" style="max-width: 800px;">
+    <h2>
+        {% if object %}
+            ✏️ Редактирование публикации
+        {% else %}
+            ➕ Создание публикации
+        {% endif %}
+    </h2>
+    <hr>
 
-<form method="post">
-    {% csrf_token %}
-    
-    <div style="margin-bottom: 15px;">
-        <label for="{{ form.title.id_for_label }}">Заголовок:</label><br>
-        {{ form.title }}
+    <!-- Блок ошибок -->
+    {% if form.errors or form.non_field_errors %}
+    <div class="error-block">
+        <strong>⚠️ Исправьте ошибки:</strong>
+        <ul>
+        {% for field in form %}
+            {% for error in field.errors %}
+                <li>{{ field.label }}: {{ error }}</li>
+            {% endfor %}
+        {% endfor %}
+        {% for error in form.non_field_errors %}
+            <li>{{ error }}</li>
+        {% endfor %}
+        </ul>
     </div>
-    
-    <div style="margin-bottom: 15px;">
-        <label for="{{ form.text.id_for_label }}">Текст:</label><br>
-        {{ form.text }}
-    </div>
-    
-    <div style="margin-bottom: 15px;">
-        <label>Категории:</label><br>
-        {{ form.categories }}
-    </div>
-    
-    <button type="submit" class="btn btn-success">Сохранить</button>
-    <a href="{% url 'news:post_list' %}" class="btn btn-secondary">Отмена</a>
-</form>
-{% endblock content %}
+    {% endif %}
+
+    <!-- Форма -->
+    <form method="post" class="auth-form">
+        {% csrf_token %}
+
+        <!-- Заголовок -->
+        <div class="form-group">
+            <label for="id_title">
+                Заголовок
+                <span class="required">*</span>
+            </label>
+            <input type="text" name="title" id="id_title"
+                   value="{{ form.title.value|default:'' }}"
+                   placeholder="Введите заголовок публикации"
+                   class="{% if form.title.errors %}error{% endif %}"
+                   required>
+        </div>
+
+        <!-- Текст -->
+        <div class="form-group">
+            <label for="id_text">
+                Текст публикации
+                <span class="required">*</span>
+            </label>
+            <textarea name="text" id="id_text" rows="10"
+                      placeholder="Введите текст публикации"
+                      class="{% if form.text.errors %}error{% endif %}"
+                      style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 1rem; font-family: inherit;"
+                      required>{{ form.text.value|default:'' }}</textarea>
+        </div>
+
+        <!-- Категории -->
+        <div class="form-group">
+            <label for="id_categories">Категории</label>
+            <select name="categories" id="id_categories" multiple
+                    style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 1rem;">
+                {% for category in form.categories.field.queryset %}
+                <option value="{{ category.pk }}"
+                        {% if category in form.categories.value %}selected{% endif %}>
+                    {{ category.name }}
+                </option>
+                {% endfor %}
+            </select>
+            <small class="form-help">Зажмите Ctrl (Cmd на Mac) для выбора нескольких категорий</small>
+        </div>
+
+        <!-- Кнопки -->
+        <div style="display: flex; gap: 15px; margin-top: 20px;">
+            <button type="submit" class="btn btn-success" style="flex: 1;">
+                {% if object %}Сохранить изменения{% else %}Создать публикацию{% endif %}
+            </button>
+            <a href="{% url 'news:post_list' %}" class="btn btn-secondary" style="flex: 1; text-align: center;">
+                Отмена
+            </a>
+        </div>
+    </form>
+</div>
+{% endblock %}

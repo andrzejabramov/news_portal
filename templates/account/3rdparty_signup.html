@@ -1,45 +1,71 @@
+{# DEBUG: Этот файл загружается! #}
 {% extends 'flatpages/default.html' %}
+{% load socialaccount %}
+
+{% block title %}Привязка Yandex{% endblock %}
 
 {% block content %}
-<h2>Привязка Yandex</h2>
+<div class="auth-card">
+    <h2>Привязка Yandex-аккаунта</h2>
+    <hr>
 
-{% if form.errors %}
-<div style="color: red; margin: 10px 0; padding: 10px; background: #ffe0e0; border-radius: 5px;">
-    <strong>Ошибки:</strong>
-    <ul>
-    {% for field in form %}
-        {% for error in field.errors %}
-            <li>{{ field.label }}: {{ error }}</li>
+    <p style="margin-bottom: 20px; color: #666;">
+        Мы нашли ваш Yandex-аккаунт. Заполните данные для завершения регистрации.
+    </p>
+
+    <!-- Блок ошибок -->
+    {% if form.errors or form.non_field_errors %}
+    <div class="error-block">
+        <strong>⚠️ Исправьте ошибки:</strong>
+        <ul>
+        {% for field in form %}
+            {% for error in field.errors %}
+                <li>{{ error }}</li>
+            {% endfor %}
         {% endfor %}
-    {% endfor %}
-    {% for error in form.non_field_errors %}
-        <li>{{ error }}</li>
-    {% endfor %}
-    </ul>
-</div>
-{% endif %}
+        {% for error in form.non_field_errors %}
+            <li>{{ error }}</li>
+        {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
 
-{% if form.non_field_errors %}
-<div style="color: red; margin: 10px 0; padding: 10px; background: #ffe0e0;">
-    <strong>❌ Общая ошибка:</strong>
-    <ul>
-    {% for error in form.non_field_errors %}
-        <li>{{ error }}</li>
-    {% endfor %}
-    </ul>
-</div>
-{% endif %}
+    <!-- Форма -->
+    <form method="post" class="auth-form">
+        {% csrf_token %}
 
-<div style="background: #f0f0f0; padding: 10px; margin: 10px 0;">
-    <strong>Отладка формы:</strong><br>
-    {% for field in form %}
-        {{ field.name }}: "{{ field.value }}"<br>
-    {% endfor %}
-</div>
+        <!-- Email (скрытое поле от allauth) -->
+        {% if form.email %}
+        <div class="form-group">
+            <label for="id_email">Email</label>
+            <input type="email" name="email" id="id_email"
+                   value="{{ form.email.value }}"
+                   readonly
+                   style="background: #f5f5f5; cursor: not-allowed;">
+            <small class="form-help">Email из Yandex-аккаунта</small>
+        </div>
+        {% endif %}
 
-<form method="post" action="{% url 'socialaccount_signup' %}">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Sign Up</button>
-</form>
+        <!-- Username -->
+        {% if form.username %}
+        <div class="form-group">
+            <label for="id_username">
+                Имя пользователя
+                <span class="required">*</span>
+            </label>
+            <input type="text" name="username" id="id_username"
+                   value="{{ form.username.value|default:'' }}"
+                   placeholder="Придумайте логин"
+                   class="{% if form.username.errors %}error{% endif %}">
+        </div>
+        {% endif %}
+
+        <button type="submit" class="btn btn-success btn-block">Завершить регистрацию</button>
+    </form>
+
+    <!-- Отмена -->
+    <p class="auth-links">
+        <a href="{% url 'account_login' %}">← Вернуться ко входу</a>
+    </p>
+</div>
 {% endblock %}

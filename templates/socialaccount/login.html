@@ -1,0 +1,26 @@
+{% extends 'flatpages/default.html' %}
+{% load socialaccount %}
+
+{% block title %}Вход через Yandex{% endblock %}
+
+{% block content %}
+<div class="auth-card">
+    <h2>Вход через Yandex</h2>
+    <hr>
+    
+    <p style="margin-bottom: 20px; color: #666; text-align: center;">
+        Вы собираетесь войти, используя стороннюю учетную запись из Yandex.
+    </p>
+
+    <form method="post" class="auth-form">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-yandex btn-block">
+            🟡 Продолжить через Yandex
+        </button>
+    </form>
+    
+    <p class="auth-links">
+        <a href="{% url 'account_login' %}">← Вернуться ко входу</a>
+    </p>
+</div>
+{% endblock %}

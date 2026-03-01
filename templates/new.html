@@ -7,7 +7,7 @@
 {% block title %}
 New
 {% endblock title %}
-<!--    <h3>{{ time_now|date:"M d Y" }}</h3>-->
+
 <!-- В контенте на странице мы выводим сам товар, идентификатор которого был передан в url -->
 {% block content %}
 <h1>Тип: {{ new.get_type_display }}</h1>
@@ -16,4 +16,30 @@ New
 <h1>Содержание: {{ new.text|censor }}</h1>
 <h1>Рейтинг: {{ new.rating }}</h1>
 <h1>Автор: {{ new.author }}</h1>
+
+<!-- Кнопки редактирования/удаления (только для автора) -->
+{% if user.is_authenticated and new.author.user == user %}
+<div style="margin: 20px 0; padding: 15px; background: #f5f5f5; border-radius: 5px; border: 1px solid #ddd;">
+    {% if new.type == 'article' %}
+        <a href="{% url 'news:article_edit' pk=new.pk %}"
+           style="color: #4CAF50; text-decoration: none; margin-right: 15px;">
+            ✏️ Редактировать
+        </a>
+        <a href="{% url 'news:article_delete' pk=new.pk %}"
+           style="color: #f44336; text-decoration: none;">
+            🗑️ Удалить
+        </a>
+    {% else %}
+        <a href="{% url 'news:news_edit' pk=new.pk %}"
+           style="color: #4CAF50; text-decoration: none; margin-right: 15px;">
+            ✏️ Редактировать
+        </a>
+        <a href="{% url 'news:news_delete' pk=new.pk %}"
+           style="color: #f44336; text-decoration: none;">
+            🗑️ Удалить
+        </a>
+    {% endif %}
+</div>
+{% endif %}
+
 {% endblock content %}

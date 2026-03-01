@@ -1,3 +1,9 @@
+/* ============================================
+   NEWS PORTAL — Navigation & Auth Styles
+   Версия: 2.0 (очищено от дубликатов)
+   ============================================ */
+
+/* ===== НАВИГАЦИЯ ===== */
 .navbar {
   background: #333;
   padding: 15px;
@@ -15,38 +21,22 @@
   background: #555;
 }
 
-.navbar .username {
-  color: white;
+/* Имя пользователя в навигации */
+.navbar-username {
+  color: #ffd700 !important;  /* Золотой */
   font-weight: 500;
+  margin: 0 10px;
 }
 
-.navbar .logout {
-  color: #ff6b6b;
+/* Группа пользователя */
+.navbar-group {
+  color: #aaa !important;     /* Светло-серый */
+  font-size: 0.9em;
 }
 
-/* ===== Твои существующие стили (оставь как есть) ===== */
-.navbar {
-  background: #333;
-  padding: 15px;
-  margin-bottom: 20px;
-}
-
-.navbar a {
-  color: white;
-  text-decoration: none;
-  padding: 5px 10px;
-  border-radius: 3px;
-}
-
-.navbar a:hover {
-  background: #555;
-}
-
-/* ===== ДОБАВЬ эти стили (для форм и ошибок) ===== */
-
-/* Контейнер для форм */
+/* ===== ФОРМЫ АВТОРИЗАЦИИ ===== */
 .auth-card {
-  max-width: 500px;
+  max-width: 400px;           /* ← Уменьшил с 500px для компактности */
   margin: 0 auto;
   background: white;
   padding: 30px;
@@ -120,6 +110,7 @@
   border-radius: 6px;
   font-size: 1rem;
   transition: border-color 0.2s;
+  box-sizing: border-box;  /* ← Важно для корректной ширины */
 }
 
 .form-group input:focus {
@@ -136,7 +127,7 @@
   color: #666;
 }
 
-/* Кнопки */
+/* ===== КНОПКИ — ЕДИНАЯ ШИРИНА ===== */
 .btn {
   display: inline-block;
   padding: 12px 24px;
@@ -148,6 +139,16 @@
   text-decoration: none;
   text-align: center;
   transition: all 0.2s;
+  box-sizing: border-box;  /* ← Важно для корректной ширины */
+}
+
+/* Все кнопки в auth-form — единая ширина */
+.auth-form .btn,
+.auth-form .btn-block {
+  width: 100%;
+  max-width: 340px;         /* ← Оптимальная ширина для кнопок */
+  margin: 0 auto;           /* ← Центрирование */
+  display: block;
 }
 
 .btn-success {
@@ -173,6 +174,7 @@
   background: #ffcc00;
   color: #333;
   font-weight: 600;
+  border: 2px solid #333;   /* ← Добавил рамку для контраста */
 }
 
 .btn-yandex:hover {
@@ -183,7 +185,16 @@
   width: 100%;
 }
 
-/* Ссылки */
+.btn-danger {
+  background: #f44336;
+  color: white;
+}
+
+.btn-danger:hover {
+  background: #da190b;
+}
+
+/* ===== ССЫЛКИ ===== */
 .auth-links {
   text-align: center;
   margin-top: 20px;
@@ -220,7 +231,7 @@
   padding: 0 15px;
 }
 
-/* Сообщения (flash) */
+/* ===== СООБЩЕНИЯ (FLASH) ===== */
 .messages {
   max-width: 1200px;
   margin: 0 auto 20px;
@@ -245,7 +256,7 @@
   border: 1px solid #f5c6cb;
 }
 
-/* Футер */
+/* ===== ФУТЕР ===== */
 .footer {
   text-align: center;
   padding: 20px;
@@ -254,8 +265,17 @@
   border-top: 1px solid #eee;
 }
 
-/* ===== Группа пользователя в навигации ===== */
-.navbar-group {
-  color: #ccc;              /* Светло-серый — хорошо видно на #333 */
-  font-size: 14px;
+/* ===== АДАПТИВ ===== */
+@media (max-width: 480px) {
+  .auth-card {
+    max-width: 100%;
+    margin: 0 10px;
+    padding: 20px;
+  }
+  
+  .auth-form .btn,
+  .auth-form .btn-block,
+  .btn-yandex {
+    max-width: 100%;  /* На мобильных — на всю ширину */
+  }
 }

@@ -1,42 +1,74 @@
 {% extends 'flatpages/default.html' %}
 {% load socialaccount %}
 
-{% block title %}
-Вход в систему
-{% endblock title %}
+{% block title %}Вход в систему{% endblock %}
 
 {% block content %}
-<h2>Вход в систему</h2>
-<hr>
+<div class="auth-card">
+    <h2>Вход в систему</h2>
+    <hr>
 
-<form method="post">
-    {% csrf_token %}
-    
-    <div style="margin-bottom: 15px;">
-        <label for="id_login">Email или имя пользователя:</label><br>
-        <input type="text" name="login" id="id_login" 
-               style="width: 300px; padding: 5px;"
-               value="{{ form.login.value|default:'' }}">
-    </div>
-    
-    <div style="margin-bottom: 15px;">
-        <label for="id_password">Пароль:</label><br>
-        <input type="password" name="password" id="id_password" 
-               style="width: 300px; padding: 5px;">
-    </div>
-    
-    {% if form.errors %}
-    <div style="color: red; margin-bottom: 15px;">
-        {{ form.errors }}
+    <!-- Блок ошибок -->
+    {% if form.errors or form.non_field_errors %}
+    <div class="error-block">
+        <strong>⚠️ Исправьте ошибки:</strong>
+        <ul>
+        {% for field in form %}
+            {% for error in field.errors %}
+                <li>{{ field.label }}: {{ error }}</li>
+            {% endfor %}
+        {% endfor %}
+        {% for error in form.non_field_errors %}
+            <li>{{ error }}</li>
+        {% endfor %}
+        </ul>
     </div>
     {% endif %}
-    
-    <button type="submit" class="btn btn-primary">Войти</button>
-    <a href="{% url 'account_signup' %}" class="btn btn-secondary">Регистрация</a>
-</form>
 
-<hr>
+    <!-- Форма входа -->
+    <form method="post" class="auth-form">
+        {% csrf_token %}
 
-<h3>Войти через:</h3>
-<a href="{% provider_login_url 'yandex' %}" class="btn btn-warning">Yandex</a>
-{% endblock content %}
+        <div class="form-group">
+            <label for="id_login">
+                Email или имя пользователя
+                <span class="required">*</span>
+            </label>
+            <input type="text" name="login" id="id_login"
+                   value="{{ form.login.value|default:'' }}"
+                   placeholder="Введите email или логин"
+                   class="{% if form.login.errors %}error{% endif %}">
+        </div>
+
+        <div class="form-group">
+            <label for="id_password">
+                Пароль
+                <span class="required">*</span>
+            </label>
+            <input type="password" name="password" id="id_password"
+                   placeholder="Введите пароль"
+                   class="{% if form.password.errors %}error{% endif %}">
+        </div>
+
+        <button type="submit" class="btn btn-success btn-block">Войти</button>
+    </form>
+
+    <!-- Разделитель -->
+    <div class="auth-divider">
+        <span>или</span>
+    </div>
+
+    <!-- Кнопка Yandex -->
+    <div class="auth-form">
+        <a href="{% provider_login_url 'yandex' %}"
+           class="btn btn-yandex btn-block">
+            🟡 Войти через Yandex
+        </a>
+    </div>
+
+    <!-- Ссылка на регистрацию -->
+    <p class="auth-links">
+        Нет аккаунта? <a href="{% url 'account_signup' %}">Зарегистрироваться</a>
+    </p>
+</div>
+{% endblock %}

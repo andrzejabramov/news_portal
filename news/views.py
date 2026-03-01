@@ -1,4 +1,6 @@
+# news/views.py
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
+from django.core.exceptions import PermissionDenied  # ← Новый импорт
 from django.views.generic import ListView, DetailView
 from django_filters.views import FilterView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
@@ -50,9 +52,7 @@ class PostCreate(
 
     def form_valid(self, form):
         post = form.save(commit=False)
-        # ← Устанавливаем автора из текущего пользователя
         post.author = self.request.user.author
-        # ← Устанавливаем тип по URL
         if self.request.resolver_match.url_name == 'news_create':
             post.type = Post.NEWS
         elif self.request.resolver_match.url_name == 'article_create':
@@ -74,8 +74,17 @@ class PostUpdate(
     template_name = 'post_edit.html'
 
     def get_queryset(self):
-        # ← Защита: редактировать можно только свои посты
-        return Post.objects.filter(author__user=self.request.user)
+        # Возвращаем ВСЕ посты, чтобы Django мог найти объект по PK
+        return Post.objects.all()
+
+    def get_object(self, queryset=None):
+        # Получаем объект стандартным способом
+        obj = super().get_object(queryset)
+        # Проверяем, что это пост текущего пользователя
+        if obj.author.user != self.request.user:
+            # ← Вместо 404 показываем понятную ошибку
+            raise PermissionDenied('❌ У вас отсутствуют права на редактирование данной публикации')
+        return obj
 
     def get_success_url(self):
         return reverse_lazy('news:post_detail', kwargs={'pk': self.object.pk})
@@ -87,5 +96,14 @@ class PostDelete(LoginRequiredMixin, DeleteView):
     success_url = reverse_lazy('news:post_list')
 
     def get_queryset(self):
-        # ← Защита: удалять можно только свои посты
-        return Post.objects.filter(author__user=self.request.user)
+        # Возвращаем ВСЕ посты, чтобы Django мог найти объект по PK
+        return Post.objects.all()
+
+    def get_object(self, queryset=None):
+        # Получаем объект стандартным способом
+        obj = super().get_object(queryset)
+        # Проверяем, что это пост текущего пользователя
+        if obj.author.user != self.request.user:
+            # ← Вместо 404 показываем понятную ошибку
+            raise PermissionDenied('❌ У вас отсутствуют права на удаление данной публикации')
+        return obj
