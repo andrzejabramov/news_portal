@@ -161,7 +161,7 @@ Coverage HTML written to dir htmlcov
 | 3.9 | authors → удаление своего | Войти как author → свой пост → delete | Страница подтверждения (200 OK) | ✅ | <a href="../img/scren3_9.png" target="_blank">📸</a>                                                          |
 | 3.10 | authors → удаление чужого | Войти как author → чужой пост → delete | **403**: «❌ У вас отсутствуют права...» | ✅ | <a href="../img/scren3_8_1.png" target="_blank">📸</a>                                                        |
 | 3.11 | Навигация для common | Войти как common → `/news/` | Кнопка «Стать автором», нет «+ Новая новость» | ✅ | <a href="../img/scren1_9.png" target="_blank">📸</a>                                                          |
-| 3.12 | Навигация для authors | Войти как author → `/news/` | Кнопка «+ Новая новость», нет «Стать автором» | ✅ | <a href="../img/scren3_12.png" target="_blank">📸</a>                                                         |
+| 3.12 | Навигация для authors | Войти как author → `/news/` | Кнопка «+ Новая новость», нет «Стать автором» | ✅ | <a href="../img/scren2_7.png" target="_blank">📸</a>                                                          |
 
 ---
 
