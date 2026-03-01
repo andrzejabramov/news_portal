@@ -139,7 +139,7 @@ Coverage HTML written to dir htmlcov
 | 2.3 | Несуществующий пользователь | Ввести `fakeuser` / пароль → Войти | Ошибка «неверное имя или пароль» | ✅ | <a href="../img/scren2_3.png" target="_blank">📸</a>                                                                                                                  |
 | 2.4 | Неверный пароль | Ввести логин / неверный пароль → Войти | Ошибка «неверное имя или пароль» | ✅ | <a href="../img/scren2_4.png" target="_blank">📸</a>                                                                                                                  |
 | 2.5 | Успешный вход | Валидные данные → Войти | Редирект на `/news/`, в шапке «Привет, {username}!» | ✅ | <a href="../img/scren2_5.png" target="_blank">📸</a>                                                                                                                  |
-| 2.6 | Вход через Yandex (новый) | Клик Yandex → авторизация → новый email | Форма подтверждения или авто-регистрация | ✅ | <a href="../img/scren2_6.png" target="_blank">📸1</a> <a href="../img/scren2_6_1.png" target="_blank">📸2</a> <a href="../img/scren2_6_2.png" target="_blank">📸2</a> |
+| 2.6 | Вход через Yandex (новый) | Клик Yandex → авторизация → новый email | Форма подтверждения или авто-регистрация | ✅ | <a href="../img/scren2_6.png" target="_blank">📸1</a> <a href="../img/scren2_6_1.png" target="_blank">📸2</a> <a href="../img/scren2_6_2.png" target="_blank">📸3</a> |
 | 2.7 | Вход через Yandex (сущ.) | Клик Yandex → email совпадает | Сразу `/news/`, авто-привязка | ✅ | <a href="../img/scren2_7.png" target="_blank">📸</a>                                                                                                                  |
 | 2.8 | Выход из системы | `/accounts/logout/` → Confirm | Редирект на `/news/`, в шапке «Войти»/«Регистрация» | ✅ | <a href="../img/scren2_8.png" target="_blank">📸</a>                                                                                                                  |
 | 2.9 | Доступ после выхода | Выйти → открыть `/news/news/create/` | Редирект на `/accounts/login/?next=...` | ✅ | <a href="../img/scren2_9.png" target="_blank">📸</a>                                                                                                                  |
@@ -148,20 +148,20 @@ Coverage HTML written to dir htmlcov
 
 ### Раздел 3: Группы и права (Permissions)
 
-| № | Сценарий | Действия | Ожидаемый результат | Статус | Скриншот |
-|---|----------|----------|---------------------|--------|----------|
-| 3.1 | Новый пользователь → группа | Зарегистрировать → проверить админку | Автоматически в группе `common` | ✅ | <a href="../img/scren3_1.png" target="_blank">📸</a> |
-| 3.2 | common → создание новости | Войти как common → `/news/news/create/` | **403 Forbidden** | ✅ | <a href="../img/scren3_2.png" target="_blank">📸</a> |
-| 3.3 | common → редактирование | Войти как common → `/news/news/<id>/edit/` | **403 Forbidden** | ✅ | <a href="../img/scren3_3.png" target="_blank">📸</a> |
-| 3.4 | common → удаление | Войти как common → `/news/news/<id>/delete/` | **403 Forbidden** | ✅ | <a href="../img/scren3_4.png" target="_blank">📸</a> |
-| 3.5 | Страница «Стать автором» | `/accounts/become-author/` → POST | Пользователь добавлен в `authors` | ✅ | <a href="../img/scren3_5.png" target="_blank">📸</a> |
-| 3.6 | authors → создание | Войти как author → `/news/news/create/` | Форма доступна (200 OK) | ✅ | <a href="../img/scren3_6.png" target="_blank">📸</a> |
-| 3.7 | authors → редактирование своего | Войти как author → свой пост → edit | Форма доступна (200 OK) | ✅ | <a href="../img/scren3_7.png" target="_blank">📸</a> |
-| 3.8 | authors → редактирование чужого | Войти как author → чужой пост → edit | **403**: «❌ У вас отсутствуют права...» | ✅ | <a href="../img/scren3_8.png" target="_blank">📸</a> |
-| 3.9 | authors → удаление своего | Войти как author → свой пост → delete | Страница подтверждения (200 OK) | ✅ | <a href="../img/scren3_9.png" target="_blank">📸</a> |
-| 3.10 | authors → удаление чужого | Войти как author → чужой пост → delete | **403**: «❌ У вас отсутствуют права...» | ✅ | <a href="../img/scren3_10.png" target="_blank">📸</a> |
-| 3.11 | Навигация для common | Войти как common → `/news/` | Кнопка «Стать автором», нет «+ Новая новость» | ✅ | <a href="../img/scren3_11.png" target="_blank">📸</a> |
-| 3.12 | Навигация для authors | Войти как author → `/news/` | Кнопка «+ Новая новость», нет «Стать автором» | ✅ | <a href="../img/scren3_12.png" target="_blank">📸</a> |
+| № | Сценарий | Действия | Ожидаемый результат | Статус | Скриншот                                                                                                      |
+|---|----------|----------|---------------------|--------|---------------------------------------------------------------------------------------------------------------|
+| 3.1 | Новый пользователь → группа | Зарегистрировать → проверить админку | Автоматически в группе `common` | ✅ | <a href="../img/scren3_1.png" target="_blank">📸1</a> <a href="../img/scren3_1_1.png" target="_blank">📸2</a> |
+| 3.2 | common → создание новости | Войти как common → `/news/news/create/` | **403 Forbidden** | ✅ | <a href="../img/scren3_2.png" target="_blank">📸</a>                                                          |
+| 3.3 | common → редактирование | Войти как common → `/news/news/<id>/edit/` | **403 Forbidden** | ✅ | <a href="../img/scren3_3.png" target="_blank">📸</a>                                                          |
+| 3.4 | common → удаление | Войти как common → `/news/news/<id>/delete/` | **403 Forbidden** | ✅ | <a href="../img/scren3_3.png" target="_blank">📸</a>                                                          |
+| 3.5 | Страница «Стать автором» | `/accounts/become-author/` → POST | Пользователь добавлен в `authors` | ✅ | <a href="../img/scren3_5.png" target="_blank">📸</a>                                                          |
+| 3.6 | authors → создание | Войти как author → `/news/news/create/` | Форма доступна (200 OK) | ✅ | <a href="../img/scren3_6.png" target="_blank">📸</a>                                                          |
+| 3.7 | authors → редактирование своего | Войти как author → свой пост → edit | Форма доступна (200 OK) | ✅ | <a href="../img/scren3_7.png" target="_blank">📸</a>                                                          |
+| 3.8 | authors → редактирование чужого | Войти как author → чужой пост → edit | **403**: «❌ У вас отсутствуют права...» | ✅ | <a href="../img/scren3_8.png" target="_blank">📸</a>                                                          |
+| 3.9 | authors → удаление своего | Войти как author → свой пост → delete | Страница подтверждения (200 OK) | ✅ | <a href="../img/scren3_9.png" target="_blank">📸</a>                                                          |
+| 3.10 | authors → удаление чужого | Войти как author → чужой пост → delete | **403**: «❌ У вас отсутствуют права...» | ✅ | <a href="../img/scren3_10.png" target="_blank">📸</a>                                                         |
+| 3.11 | Навигация для common | Войти как common → `/news/` | Кнопка «Стать автором», нет «+ Новая новость» | ✅ | <a href="../img/scren3_11.png" target="_blank">📸</a>                                                         |
+| 3.12 | Навигация для authors | Войти как author → `/news/` | Кнопка «+ Новая новость», нет «Стать автором» | ✅ | <a href="../img/scren3_12.png" target="_blank">📸</a>                                                         |
 
 ---
 
