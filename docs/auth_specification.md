@@ -115,18 +115,18 @@ Coverage HTML written to dir htmlcov
 
 ### Раздел 1: Регистрация (Signup)
 
-| № | Сценарий | Действия | Ожидаемый результат | Статус | Скриншот                                              |
-|---|----------|----------|---------------------|--------|-------------------------------------------------------|
-| 1.1 | Открыть страницу регистрации | `/accounts/signup/` | Форма с полями Email, Username, Пароль | ✅ | <a href="../img/scren1_1.png" target="_blank">📸</a>  |
-| 1.2 | Пустой email | Оставить email пустым → Submit | Ошибка валидации (красный блок) | ✅ | <a href="../img/scren1_2.png" target="_blank">📸</a>  |
-| 1.3 | Email уже занят | Ввести существующий email → Submit | Ошибка «уже зарегистрирован» | ✅ | <a href="../img/scren1_3.png" target="_blank">📸</a>  |
-| 1.4 | Пустой username | Оставить username пустым → Submit | Ошибка валидации | ✅ | <a href="../img/scren1_3.png" target="_blank">📸</a>  |
-| 1.5 | Username уже занят | Ввести существующий username → Submit | Ошибка «уже существует» | ✅ | <a href="../img/scren1_5.png" target="_blank">📸</a>  |
-| 1.6 | Username < 3 символов | Ввести `ab` → Submit | Ошибка «минимум 3 символа» | ✅ | <a href="../img/scren1_6.png" target="_blank">📸</a>  |
-| 1.7 | Пароль < 8 символов | Ввести `12345` → Submit | Ошибка «минимум 8 символов» | ✅ | <a href="../img/scren1_7.png" target="_blank">📸</a>  |
-| 1.8 | Пароли не совпадают | Ввести разные password1/password2 → Submit | Ошибка «пароли не совпадают» | ✅ | <a href="../img/scren1_8.png" target="_blank">📸</a>  |
-| 1.9 | Успешная регистрация | Валидные данные → Submit | Редирект на `/news/`, пользователь в `common` | ✅ | <a href="../img/scren1_9.png" target="_blank">📸</a>  |
-| 1.10 | Кнопка Yandex | Проверить страницу `/accounts/signup/` | Кнопка «🟡 Войти через Yandex» | ✅ | <a href="../img/scren1_10.png" target="_blank">📸</a> |
+| № | Сценарий | Действия | Ожидаемый результат | Статус | Скриншот                                             |
+|---|----------|----------|---------------------|--------|------------------------------------------------------|
+| 1.1 | Открыть страницу регистрации | `/accounts/signup/` | Форма с полями Email, Username, Пароль | ✅ | <a href="../img/scren1_1.png" target="_blank">📸</a> |
+| 1.2 | Пустой email | Оставить email пустым → Submit | Ошибка валидации (красный блок) | ✅ | <a href="../img/scren1_2.png" target="_blank">📸</a> |
+| 1.3 | Email уже занят | Ввести существующий email → Submit | Ошибка «уже зарегистрирован» | ✅ | <a href="../img/scren1_3.png" target="_blank">📸</a> |
+| 1.4 | Пустой username | Оставить username пустым → Submit | Ошибка валидации | ✅ | <a href="../img/scren1_3.png" target="_blank">📸</a> |
+| 1.5 | Username уже занят | Ввести существующий username → Submit | Ошибка «уже существует» | ✅ | <a href="../img/scren1_5.png" target="_blank">📸</a> |
+| 1.6 | Username < 3 символов | Ввести `ab` → Submit | Ошибка «минимум 3 символа» | ✅ | <a href="../img/scren1_6.png" target="_blank">📸</a> |
+| 1.7 | Пароль < 8 символов | Ввести `12345` → Submit | Ошибка «минимум 8 символов» | ✅ | <a href="../img/scren1_7.png" target="_blank">📸</a> |
+| 1.8 | Пароли не совпадают | Ввести разные password1/password2 → Submit | Ошибка «пароли не совпадают» | ✅ | <a href="../img/scren1_8.png" target="_blank">📸</a> |
+| 1.9 | Успешная регистрация | Валидные данные → Submit | Редирект на `/news/`, пользователь в `common` | ✅ | <a href="../img/scren1_9.png" target="_blank">📸</a> |
+| 1.10 | Кнопка Yandex | Проверить страницу `/accounts/signup/` | Кнопка «🟡 Войти через Yandex» | ✅ | <a href="../img/scren1_1.png" target="_blank">📸</a> |
 
 ---
 
