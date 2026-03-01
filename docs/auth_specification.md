@@ -214,13 +214,13 @@ Coverage HTML written to dir htmlcov
 
 ### Раздел 7: Админ-панель
 
-| № | Сценарий | Действия | Ожидаемый результат | Статус | Скриншот |
-|---|----------|----------|---------------------|--------|----------|
-| 7.1 | Вход в админку | `/admin/` → Суперпользователь | Доступ есть | ✅ | <a href="../img/scren7_1.png" target="_blank">📸</a> |
-| 7.2 | Пользователи в админке | Admin → Users → Проверить нового | Видим, группа `common` назначена | ✅ | <a href="../img/scren7_2.png" target="_blank">📸</a> |
-| 7.3 | Группы в админке | Admin → Groups → `authors` | Права `add_post`, `change_post` назначены | ✅ | <a href="../img/scren7_3.png" target="_blank">📸</a> |
-| 7.4 | Social applications | Admin → Social applications → Yandex | Client ID/Secret настроены | ✅ | <a href="../img/scren7_4.png" target="_blank">📸</a> |
-| 7.5 | Social accounts | Admin → Social accounts → Проверить Yandex | Привязка к пользователю есть | ✅ | <a href="../img/scren7_5.png" target="_blank">📸</a> |
+| № | Сценарий | Действия | Ожидаемый результат | Статус | Скриншот                                                                                                                  |
+|---|----------|----------|---------------------|--------|---------------------------------------------------------------------------------------------------------------------------|
+| 7.1 | Вход в админку | `/admin/` → Суперпользователь | Доступ есть | ✅ | <a href="../img/scren7_1.png" target="_blank">📸</a>                                                                      |
+| 7.2 | Пользователи в админке | Admin → Users → Проверить нового | Видим, группа `common` назначена | ✅ | <a href="../img/scren7_2_common.png" target="_blank">📸1</a> <a href="../img/scren7_2_author.png" target="_blank">📸2</a> |
+| 7.3 | Группы в админке | Admin → Groups → `authors` | Права `add_post`, `change_post` назначены | ✅ | <a href="../img/scren7_3.png" target="_blank">📸</a>                                                                      |
+| 7.4 | Social applications | Admin → Social applications → Yandex | Client ID/Secret настроены | ✅ | <a href="../img/scren7_4.png" target="_blank">📸</a>                                                                      |
+| 7.5 | Social accounts | Admin → Social accounts → Проверить Yandex | Привязка к пользователю есть | ✅ | <a href="../img/scren7_5.png" target="_blank">📸</a>                                                                      |
 
 ---
 
