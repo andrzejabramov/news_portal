@@ -89,3 +89,58 @@ class Comment(models.Model):
 
     def __str__(self):
         return f"Комментарий от {self.user.username} к {self.post.title}"
+
+
+# =============================================================================
+# ПОДПИСКИ ПОЛЬЗОВАТЕЛЕЙ НА КАТЕГОРИИ
+# =============================================================================
+
+class UserCategorySubscription(models.Model):
+    """
+    Подписка пользователя на категорию новостей.
+
+    Пользователь может подписаться на одну категорию только один раз.
+    При публикации новой статьи в подписанной категории пользователь
+    получает уведомление на email.
+    """
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='category_subscriptions',
+        verbose_name='Пользователь'
+    )
+    category = models.ForeignKey(
+        Category,
+        on_delete=models.CASCADE,
+        related_name='subscribers',
+        verbose_name='Категория'
+    )
+    created_at = models.DateTimeField(
+        auto_now_add=True,
+        verbose_name='Дата подписки'
+    )
+    is_active = models.BooleanField(
+        default=True,
+        verbose_name='Активна',
+        help_text='Если снято — пользователь не получает уведомления, но подписка сохраняется'
+    )
+
+    class Meta:
+        verbose_name = 'Подписка на категорию'
+        verbose_name_plural = 'Подписки на категории'
+        unique_together = ('user', 'category')  # Защита от дублей
+        ordering = ['-created_at']
+        indexes = [
+            models.Index(fields=['user', 'is_active']),
+            models.Index(fields=['category', 'is_active']),
+        ]
+
+    def __str__(self):
+        status = '✓' if self.is_active else '✗'
+        return f"{status} {self.user.username} → {self.category.name}"
+
+    def unsubscribe(self):
+        """Мягкая отписка: деактивирует подписку без удаления"""
+        self.is_active = False
+        self.save()
+        return True

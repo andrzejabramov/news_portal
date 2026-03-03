@@ -1,29 +1,43 @@
-from django.urls import path
-from .views import (
-    PostList,
-    PostDetail,
-    PostSearch,
-    PostCreate,
-    PostUpdate,
-    PostDelete,
-)
+# news/urls.py
 
-app_name = "news"
+from django.urls import path
+from . import views
+
+app_name = 'news'
 
 urlpatterns = [
-    path("", PostList.as_view(), name="post_list"),
-    path("<int:pk>/", PostDetail.as_view(), name="post_detail"),
-    path("search/", PostSearch.as_view(), name="search"),
+    # =============================================================================
+    # СПИСОК И ПОИСК
+    # =============================================================================
+    path('', views.PostList.as_view(), name='post_list'),
+    path('search/', views.PostSearch.as_view(), name='search'),
 
-    # Создание
-    path('news/create/', PostCreate.as_view(), name='news_create'),
-    path('articles/create/', PostCreate.as_view(), name='article_create'),
+    # =============================================================================
+    # ДЕТАЛЬНЫЙ ПРОСМОТР
+    # =============================================================================
+    path('<int:pk>/', views.PostDetail.as_view(), name='post_detail'),
 
-    # Редактирование
-    path('news/<int:pk>/edit/', PostUpdate.as_view(), name='news_edit'),
-    path('articles/<int:pk>/edit/', PostUpdate.as_view(), name='article_edit'),
+    # =============================================================================
+    # СОЗДАНИЕ (разделено по типу поста)
+    # =============================================================================
+    path('news/create/', views.PostCreate.as_view(), name='news_create'),
+    path('article/create/', views.PostCreate.as_view(), name='article_create'),
 
-    # Удаление
-    path('news/<int:pk>/delete/', PostDelete.as_view(), name='news_delete'),
-    path('articles/<int:pk>/delete/', PostDelete.as_view(), name='article_delete'),
+    # =============================================================================
+    # РЕДАКТИРОВАНИЕ (разделено по типу поста)
+    # =============================================================================
+    path('news/<int:pk>/edit/', views.PostUpdate.as_view(), name='news_edit'),
+    path('article/<int:pk>/edit/', views.PostUpdate.as_view(), name='article_edit'),
+
+    # =============================================================================
+    # УДАЛЕНИЕ — ⚠️ ВРЕМЕННЫЕ ЗАГЛУШКИ (TODO: реализовать PostDelete)
+    # =============================================================================
+    # TODO(#DELETE-001): Добавить класс PostDelete в news/views.py
+    # TODO(#DELETE-001): Заменить PostDetail.as_view() на PostDelete.as_view() ниже
+    # Файлы для правки: news/views.py, news/urls.py
+    # Приоритет: после завершения модуля email-уведомлений
+    # Шаблоны: templates/post_delete.html (уже готов)
+
+    path('news/<int:pk>/delete/', views.PostDetail.as_view(), name='news_delete'),  # ⚠️ ЗАГЛУШКА
+    path('article/<int:pk>/delete/', views.PostDetail.as_view(), name='article_delete'),  # ⚠️ ЗАГЛУШКА
 ]
