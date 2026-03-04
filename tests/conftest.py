@@ -106,3 +106,36 @@ def sample_category(db):
     from news.models import Category
     category, _ = Category.objects.get_or_create(name='Тестовая категория')
     return category
+
+
+# =============================================================================
+# ФИКСТУРЫ ДЛЯ КОММЕНТАРИЕВ И ПОДПИСОК
+# =============================================================================
+
+@pytest.fixture
+def sample_comment(db, sample_post, user_common):
+    """Тестовый комментарий к посту"""
+    from news.models import Comment
+    return Comment.objects.create(
+        post=sample_post,
+        user=user_common,
+        text='Тестовый комментарий'
+    )
+
+
+@pytest.fixture
+def sample_subscription(db, user_common, sample_category):
+    """Активная подписка пользователя на категорию"""
+    from news.models import UserCategorySubscription
+    sub, _ = UserCategorySubscription.objects.get_or_create(
+        user=user_common,
+        category=sample_category,
+        defaults={'is_active': True}
+    )
+    return sub
+
+
+@pytest.fixture(autouse=True)
+def use_console_email_backend_for_tests(settings):
+    """Все тесты email используют console backend"""
+    settings.EMAIL_BACKEND = 'django.core.mail.backends.locmem.EmailBackend'

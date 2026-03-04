@@ -38,6 +38,12 @@ class PostDetail(DetailView):
     template_name = 'news/new.html'
     context_object_name = 'new'
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['comments'] = self.object.comment_set.all().order_by('-created_at')
+        context['comment_form'] = CommentForm()
+        return context
+
 
 class PostSearch(FilterView):
     model = Post
@@ -99,7 +105,7 @@ class PostDelete(LoginRequiredMixin, DeleteView):
     success_url = reverse_lazy('news:post_list')
 
     def get_queryset(self):
-        return Post.objects.all()
+        return Post.objects.filter(author__user=self.request.user)
 
     def get_object(self, queryset=None):
         obj = super().get_object(queryset)

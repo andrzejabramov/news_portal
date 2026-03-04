@@ -96,7 +96,7 @@ class TestPostDelete:
         """6.7: Удаление своего поста → успех"""
         client.login(username='test_author', password='TestPass123')
         post_pk = sample_post.pk
-        response = client.post(reverse('news:news_delete', kwargs={'pk': post_pk}))
+        response = client.get(reverse('news:news_delete', kwargs={'pk': post_pk}))
         assert response.status_code == 302
         assert not Post.objects.filter(pk=post_pk).exists()
 
@@ -107,7 +107,7 @@ class TestPostDelete:
             author=author_profile, title='Чужой пост', text='Текст', type=Post.NEWS
         )
         client.login(username='test_author', password='TestPass123')
-        response = client.post(reverse('news:news_delete', kwargs={'pk': other_post.pk}))
+        response = client.get(reverse('news:news_delete', kwargs={'pk': other_post.pk}))
         # Теперь ожидаем 403, а не 404!
         assert response.status_code == 403
         content = response.content.decode()
