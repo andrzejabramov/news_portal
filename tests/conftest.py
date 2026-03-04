@@ -4,7 +4,7 @@ from django.contrib.auth.models import User, Group, Permission
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.sites.models import Site
 from allauth.socialaccount.models import SocialApp
-from news.models import Author, Post
+from news.models import Author, Post, Category
 
 
 @pytest.fixture(autouse=True)
@@ -100,12 +100,18 @@ def sample_post(db, user_author):
     )
 
 
+# @pytest.fixture
+# def sample_category(db):
+#     """Тестовая категория"""
+#     from news.models import Category
+#     category, _ = Category.objects.get_or_create(name='Тестовая категория')
+#     return category
+
+
 @pytest.fixture
 def sample_category(db):
-    """Тестовая категория"""
-    from news.models import Category
-    category, _ = Category.objects.get_or_create(name='Тестовая категория')
-    return category
+    """Фикстура для тестовой категории"""
+    return Category.objects.create(name='Тестовая категория')
 
 
 # =============================================================================

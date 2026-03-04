@@ -103,7 +103,7 @@ class TestSubscriptionsListView:
         client.login(username='test_common', password='TestPass123')
         response = client.get(reverse('news:subscriptions'))
         assert response.status_code == 200
-        assert sample_category.name in str(response.content)
+        assert sample_category.name in response.content.decode('utf-8')
 
     def test_5_9_subscriptions_list_shows_status(self, client, user_common, sample_category, sample_subscription):
         """5.9: Страница показывает статус подписки (✅/❌)"""

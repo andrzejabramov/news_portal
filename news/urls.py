@@ -29,10 +29,10 @@ urlpatterns = [
     path('article/<int:pk>/edit/', views.PostUpdate.as_view(), name='article_edit'),
 
     # =============================================================================
-    # УДАЛЕНИЕ — ⚠️ ВРЕМЕННЫЕ ЗАГЛУШКИ
+    # УДАЛЕНИЕ
     # =============================================================================
-    path('news/<int:pk>/delete/', views.PostDetail.as_view(), name='news_delete'),  # ⚠️ ЗАГЛУШКА
-    path('article/<int:pk>/delete/', views.PostDetail.as_view(), name='article_delete'),  # ⚠️ ЗАГЛУШКА
+    path('news/<int:pk>/delete/', views.PostDelete.as_view(), name='news_delete'),  # ⚠️ ЗАГЛУШКА
+    path('article/<int:pk>/delete/', views.PostDelete.as_view(), name='article_delete'),  # ⚠️ ЗАГЛУШКА
 
     # =============================================================================
     # ПОДПИСКИ НА КАТЕГОРИИ

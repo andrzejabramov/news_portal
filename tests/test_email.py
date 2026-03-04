@@ -7,6 +7,7 @@
 import pytest
 from django.core import mail
 from django.contrib.auth.models import User
+from django.db.models.signals import post_save
 from news.models import Post, Author, Category, UserCategorySubscription
 from news.utils.email import send_welcome_email, send_new_post_notification, send_weekly_digest
 
@@ -50,10 +51,12 @@ class TestNewPostNotification:
         # Функция должна выполниться без ошибок
         assert result is None or isinstance(result, dict)
 
-    def test_7_5_signal_triggers_on_post_create(self, user_author, sample_category):
+    def test_7_5_signal_triggers_on_post_create(
+            self,
+            user_author,
+            sample_category,
+    ):
         """7.5: Сигнал post_save срабатывает при создании поста"""
-        from django.db.models.signals import post_save
-        from news.models import Post
 
         # Создаём пост с категорией
         initial_count = len(mail.outbox)
@@ -69,7 +72,15 @@ class TestNewPostNotification:
         # Если сигнал настроен - должно быть письмо
         assert Post.objects.filter(title='Тестовый пост для сигнала').exists()
 
-    def test_7_6_notification_sent_only_to_subscribers(self, sample_post, user_common, user_author):
+    def test_7_6_notification_sent_only_to_subscribers(
+            self,
+            sample_post,
+            sample_category,
+            user_common,
+            user_author,
+    ):
+        """Тест: уведомление получают только подписанные пользователи"""
+        mail.outbox.clear()
         """7.6: Уведомление уходит только подписчикам"""
         # Создаём подписку только для user_common
         UserCategorySubscription.objects.create(
@@ -78,9 +89,15 @@ class TestNewPostNotification:
             is_active=True
         )
 
-        result = send_new_post_notification(sample_post)
+        # Создаём пост с этой категорией
+        sample_post.categories.add(sample_category)
+
+        # Проверяем, что письмо ушло только подписанному
+        assert len(mail.outbox) == 1
+        assert user_common.email in mail.outbox[0].to
+        #result = send_new_post_notification(sample_post)
         # Проверяем логику (зависит от реализации)
-        assert result is None or isinstance(result, dict)
+        #assert result is None or isinstance(result, dict)
 
 
 @pytest.mark.django_db
@@ -93,25 +110,47 @@ class TestWeeklyDigest:
         # Функция должна выполниться без ошибок
         assert result is None or isinstance(result, dict)
 
-    def test_7_8_send_weekly_digest_groups_by_category(self, sample_post, sample_category):
+    def test_7_8_send_weekly_digest_groups_by_category(
+            self,
+            sample_post,
+            sample_category,
+    ):
         """7.8: Посты сгруппированы по категориям в дайджесте"""
         # Проверяем, что функция работает
         result = send_weekly_digest()
         assert result is None or isinstance(result, dict)
 
-    def test_7_9_send_weekly_digest_skips_unsubscribed(self, sample_post, user_common):
+    def test_7_9_send_weekly_digest_skips_unsubscribed(
+            self,
+            sample_category,
+            sample_post,
+            user_author,
+            user_common,
+    ):
+        """Тест: дайджест не уходит отписавшимся"""
+        mail.outbox.clear()
         """7.9: Отписавшиеся пользователи не получают дайджест"""
         # Создаём неактивную подписку
-        UserCategorySubscription.objects.create(
+        sub = UserCategorySubscription.objects.create(
             user=user_common,
             category=sample_category,
-            is_active=False
+            is_active=True
         )
 
-        result = send_weekly_digest()
-        # Проверяем логику (зависит от реализации)
-        assert result is None or isinstance(result, dict)
+        # Отписываем
+        sub.is_active = False
+        sub.save()
 
+        # Создаём пост
+        sample_post.categories.add(sample_category)
+
+        # Запускаем дайджест
+        send_weekly_digest()
+        #result = send_weekly_digest()
+        # Проверяем логику (зависит от реализации)
+        #assert result is None or isinstance(result, dict)
+        # Проверяем, что писем нет
+        assert len(mail.outbox) == 0
 
 @pytest.mark.django_db
 class TestEmailBackend:
@@ -124,12 +163,18 @@ class TestEmailBackend:
 
     def test_7_11_mail_outbox_accessible(self, user_common):
         """7.11: mail.outbox доступен для проверки"""
-        from django.core import mail
-        mail.send_mail(
-            subject='Тест',
-            message='Тестовое сообщение',
-            from_email='test@test.com',
-            recipient_list=[user_common.email]
-        )
+        # mail.send_mail(
+        #     subject='Тест',
+        #     message='Тестовое сообщение',
+        #     from_email='test@test.com',
+        #     recipient_list=[user_common.email]
+        # )
+        # Очищаем outbox перед тестом
+        mail.outbox.clear()
+
+        # Отправляем письмо
+        send_welcome_email(user_common)
+
         assert len(mail.outbox) == 1
-        assert mail.outbox[0].subject == 'Тест'
+        #assert mail.outbox[0].subject == 'Тест'
+        assert user_common.email in mail.outbox[0].to

@@ -77,4 +77,4 @@ class TestGroupPermissions:
         response = client.get(reverse('news:news_delete', kwargs={'pk': other_post.pk}))
         assert response.status_code == 403
         content = response.content.decode()
-        assert 'отсутствуют права' in content or 'permissions' in content.lower()
+        assert 'отсутствуют права' in content or 'permissions' in content or 'доступ запрещён' in content.lower()

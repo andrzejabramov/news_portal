@@ -99,19 +99,71 @@ class PostUpdate(
         return reverse_lazy('news:post_detail', kwargs={'pk': self.object.pk})
 
 
+# class PostDelete(LoginRequiredMixin, DeleteView):
+#     """
+#     Удаление поста (новости/статьи).
+#     Доступно только автору поста.
+#     """
+#     model = Post
+#     template_name = 'post_delete.html'
+#     success_url = reverse_lazy('news:post_list')
+#
+#     def get_queryset(self):
+#         return Post.objects.all()
+#
+#     def dispatch(self, request, *args, **kwargs):
+#         """Проверка прав до ДО обработки запроса"""
+#         obj = self.get_object()
+#         # Проверяем, является ли пользователь автором
+#         if not request.user.is_authenticated or obj.author.user != request.user:
+#             raise PermissionDenied("❌ У вас нет прав на удаление этой публикации")
+#         return super().dispatch(request, *args, **kwargs)
+#
+#     def delete(self, request, *args, **kwargs):
+#         """Логируем успешное удаление"""
+#         obj = self.get_object()
+#         response = super().delete(request, *args, **kwargs)
+#         messages.success(request, f'✅ Публикация «{obj.title}» удалена')
+#         return response
+
+
 class PostDelete(LoginRequiredMixin, DeleteView):
+    """
+    Удаление поста (новости/статьи).
+    Доступно только автору поста.
+    """
     model = Post
     template_name = 'news/post_delete.html'
     success_url = reverse_lazy('news:post_list')
+    context_object_name = 'post'
 
     def get_queryset(self):
-        return Post.objects.filter(author__user=self.request.user)
+        return Post.objects.all()
 
     def get_object(self, queryset=None):
         obj = super().get_object(queryset)
+
+        # Проверка прав доступа
+        if not self.request.user.is_authenticated:
+            from django.core.exceptions import PermissionDenied
+            raise PermissionDenied("Требуется авторизация")
+
         if obj.author.user != self.request.user:
-            raise PermissionDenied('❌ У вас отсутствуют права на удаление данной публикации')
+            from django.core.exceptions import PermissionDenied
+            raise PermissionDenied("❌ Вы не можете удалить чужую публикацию")
+
         return obj
+
+    def post(self, request, *args, **kwargs):
+        """Обрабатываем POST-запрос на удаление"""
+        return self.delete(request, *args, **kwargs)
+
+    def delete(self, request, *args, **kwargs):
+        """Удаление поста"""
+        obj = self.get_object()
+        response = super().delete(request, *args, **kwargs)
+        messages.success(request, f'✅ Публикация «{obj.title}» удалена')
+        return response
 
 
 class SubscribeToggleView(LoginRequiredMixin, View):
