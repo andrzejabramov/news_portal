@@ -1,0 +1,130 @@
+{% extends 'flatpages/default.html' %}
+{% load custom_filters %}
+
+{% block title %}
+New
+{% endblock title %}
+
+{% block content %}
+<h1>Тип: {{ new.get_type_display }}</h1>
+<h1>Создана: {{ new.created_at|date:"d M Y" }}</h1>
+<h1>Наименование: {{ new.title|censor }}</h1>
+<h1>Содержание: {{ new.text|censor }}</h1>
+<h1>Рейтинг: {{ new.rating }}</h1>
+<h1>Автор: {{ new.author }}</h1>
+
+<!-- === КАТЕГОРИИ С КНОПКАМИ ПОДПИСКИ === -->
+<div style="margin: 20px 0; padding: 15px; background: #f9f9f9; border-radius: 5px; border: 1px solid #ddd;">
+    <h3 style="margin: 0 0 10px 0; font-size: 16px; color: #333;">📁 Категории:</h3>
+    {% for category in new.categories.all %}
+        <div style="margUser = get_user_model()sub = UserCategorySubscription.objects.filter(user=user, category=category).first()in: 8px 0; display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+            {% include 'news/_subscribe_button.html' with category=category %}
+            <span style="padding: 5px 12px; background: #4CAF50; color: white; border-radius: 3px; font-size: 14px;">
+                {{ category.name }}
+            </span>
+        </div>
+    {% empty %}
+        <p style="color: #999; margin: 0;">Категории не назначены</p>
+    {% endfor %}
+</div>
+<!-- === КОНЕЦ БЛОКА КАТЕГОРИЙ === -->
+
+<!-- === БЛОК КОММЕНТАРИЕВ === -->
+<section class="comments-section" style="margin-top: 30px; padding-top: 20px; border-top: 2px solid #eee;">
+    <h3 style="margin-bottom: 20px; color: #333;">💬 Комментарии ({{ comments.count }})</h3>
+
+    <!-- Сообщения об успехе/ошибке -->
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert" style="margin-bottom: 15px;">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <!-- Список комментариев -->
+    {% for comment in comments %}
+        <div class="comment card mb-3 {% if comment.user == user %}border-primary{% endif %}" style="padding: 15px; background: {% if comment.user == user %}#f0f7ff{% else %}#fff{% endif %};">
+            <div class="comment-body" style="margin-bottom: 10px;">
+                <p style="margin: 0 0 10px 0; line-height: 1.5;">{{ comment.text }}</p>
+            </div>
+            <div class="comment-footer d-flex justify-content-between align-items-center flex-wrap" style="font-size: 12px; color: #666;">
+                <span>
+                    <strong>{{ comment.user.username }}</strong> • {{ comment.created_at|date:"d.m.Y H:i" }}
+                </span>
+                <div class="comment-actions d-flex align-items-center gap-2">
+                    <span style="margin-right: 10px;">⭐ {{ comment.rating }}</span>
+
+                    {% if user.is_authenticated %}
+                        <a href="{% url 'news:like_comment' pk=comment.pk %}"
+                           style="color: #28a745; text-decoration: none; font-size: 14px;" title="Лайк">👍</a>
+                        <a href="{% url 'news:dislike_comment' pk=comment.pk %}"
+                           style="color: #dc3545; text-decoration: none; font-size: 14px;" title="Дизлайк">👎</a>
+                    {% endif %}
+
+                    {% if user == comment.user %}
+                        <a href="{% url 'news:edit_comment' pk=comment.pk %}"
+                           style="color: #007bff; text-decoration: none; margin-left: 8px;" title="Редактировать">✏️</a>
+                        <a href="{% url 'news:delete_comment' pk=comment.pk %}"
+                           style="color: #dc3545; text-decoration: none; margin-left: 4px;" title="Удалить"
+                           onclick="return confirm('Удалить комментарий?');">🗑️</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    {% empty %}
+        <p style="color: #999; font-style: italic;">Комментариев пока нет. Будьте первым!</p>
+    {% endfor %}
+
+    <!-- Форма добавления комментария -->
+    <div class="comment-form" style="margin-top: 30px; padding: 20px; background: #f9f9f9; border-radius: 5px;">
+        <h4 style="margin-bottom: 15px;">Оставить комментарий</h4>
+        {% if user.is_authenticated %}
+            <form method="post" action="{% url 'news:add_comment' pk=new.pk %}">
+                {% csrf_token %}
+                <div class="form-group mb-3">
+                    {{ comment_form.text }}
+                    {% if comment_form.text.errors %}
+                        <div class="text-danger" style="font-size: 12px; margin-top: 5px;">
+                            {{ comment_form.text.errors }}
+                        </div>
+                    {% endif %}
+                </div>
+                <button type="submit" class="btn btn-primary" style="padding: 8px 20px; background: #4CAF50; color: white; border: none; border-radius: 3px; cursor: pointer;">💬 Отправить комментарий</button>
+            </form>
+        {% else %}
+            <div class="alert alert-info" style="padding: 15px; background: #e7f3ff; border: 1px solid #b3d9ff; border-radius: 3px;">
+                <a href="{% url 'account_login' %}?next={{ request.path }}" style="color: #4361ee;">Войдите</a>, чтобы комментировать.
+            </div>
+        {% endif %}
+    </div>
+</section>
+<!-- === КОНЕЦ БЛОКА КОММЕНТАРИЕВ === -->
+
+<!-- Кнопки редактирования/удаления (только для автора) -->
+{% if user.is_authenticated and new.author.user == user %}
+<div style="margin: 20px 0; padding: 15px; background: #f5f5f5; border-radius: 5px; border: 1px solid #ddd;">
+    {% if new.type == 'article' %}
+        <a href="{% url 'news:article_edit' pk=new.pk %}"
+           style="color: #4CAF50; text-decoration: none; margin-right: 15px;">
+            ✏️ Редактировать
+        </a>
+        <a href="{% url 'news:article_delete' pk=new.pk %}"
+           style="color: #f44336; text-decoration: none;">
+            🗑️ Удалить
+        </a>
+    {% else %}
+        <a href="{% url 'news:news_edit' pk=new.pk %}"
+           style="color: #4CAF50; text-decoration: none; margin-right: 15px;">
+            ✏️ Редактировать
+        </a>
+        <a href="{% url 'news:news_delete' pk=new.pk %}"
+           style="color: #f44336; text-decoration: none;">
+            🗑️ Удалить
+        </a>
+    {% endif %}
+</div>
+{% endif %}
+
+{% endblock content %}

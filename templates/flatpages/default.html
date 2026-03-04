@@ -19,6 +19,7 @@
         <!-- Меню -->
         <div class="navbar-menu">
           <a href="{% url 'news:post_list' %}">Все новости</a>
+          <a href="{% url 'news:subscriptions' %}">📁 Мои подписки</a>
 
           {% if user.is_authenticated %}
             <span class="navbar-username">Привет, {{ user.username }}!</span>

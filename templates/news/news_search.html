@@ -1,0 +1,127 @@
+{% extends 'flatpages/default.html' %}
+{% load custom_filters %}
+
+{% block title %}
+Поиск новостей
+{% endblock %}
+
+{% block content %}
+<div class="auth-card" style="max-width: 800px;">
+    <h2>🔍 Поиск публикаций</h2>
+    <hr>
+
+    <!-- Форма поиска -->
+    <form method="get" class="auth-form">
+
+        <!-- Заголовок -->
+        <div class="form-group">
+            <label for="id_title">Название содержит</label>
+            <input type="text" name="title" id="id_title"
+                   value="{{ request.GET.title|default:'' }}"
+                   placeholder="Введите часть заголовка"
+                   style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 1rem;">
+        </div>
+
+        <!-- Автор -->
+        <div class="form-group">
+            <label for="id_author">Автор</label>
+            <input type="text" name="author" id="id_author"
+                   value="{{ request.GET.author|default:'' }}"
+                   placeholder="Введите имя автора"
+                   style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 1rem;">
+        </div>
+
+        <!-- Дата начала -->
+        <div class="form-group">
+            <label for="id_created_at_after">Дата с</label>
+            <input type="date" name="created_at_after" id="id_created_at_after"
+                   value="{{ request.GET.created_at_after|default:'' }}"
+                   style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 1rem;">
+        </div>
+
+        <!-- Дата окончания -->
+        <div class="form-group">
+            <label for="id_created_at_before">Дата по</label>
+            <input type="date" name="created_at_before" id="id_created_at_before"
+                   value="{{ request.GET.created_at_before|default:'' }}"
+                   style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 1rem;">
+        </div>
+
+        <!-- Кнопки -->
+        <div style="display: flex; gap: 15px; margin-top: 20px;">
+            <button type="submit" class="btn btn-success" style="flex: 1;">
+                🔍 Найти
+            </button>
+            <a href="{% url 'news:search' %}" class="btn btn-secondary" style="flex: 1; text-align: center;">
+                Сбросить фильтры
+            </a>
+        </div>
+    </form>
+</div>
+
+<!-- Результаты поиска -->
+{% if news %}
+<div class="auth-card" style="max-width: 800px; margin-top: 30px;">
+    <h3>📋 Результаты поиска ({{ news|length }})</h3>
+    <hr>
+
+    <table style="width: 100%; border-collapse: collapse;">
+        <thead>
+            <tr style="background: #f5f5f5; border-bottom: 2px solid #ddd;">
+                <th style="padding: 10px; text-align: left;">Тип</th>
+                <th style="padding: 10px; text-align: left;">Название</th>
+                <th style="padding: 10px; text-align: left;">Дата</th>
+                <th style="padding: 10px; text-align: left;">Автор</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in news %}
+            <tr style="border-bottom: 1px solid #eee;">
+                <td style="padding: 10px;">{{ item.get_type_display }}</td>
+                <td style="padding: 10px;">
+                    <a href="{% url 'news:post_detail' pk=item.pk %}"
+                       style="color: #4361ee; text-decoration: none;">
+                        {{ item.title|censor }}
+                    </a>
+                </td>
+                <td style="padding: 10px;">{{ item.created_at|date:"d.m.Y" }}</td>
+                <td style="padding: 10px;">{{ item.author.user.username }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- Пагинация с сохранением фильтров (ИЗМЕНЕНО) -->
+    {% if is_paginated %}
+    <div style="margin-top: 20px; text-align: center;">
+        {% if page_obj.has_previous %}
+            <a href="?page=1{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}"
+               style="margin: 0 5px; color: #4361ee; text-decoration: none;">« Первая</a>
+            <a href="?page={{ page_obj.previous_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}"
+               style="margin: 0 5px; color: #4361ee; text-decoration: none;">‹ Назад</a>
+        {% endif %}
+
+        <span style="margin: 0 10px; color: #666;">
+            Страница {{ page_obj.number }} из {{ page_obj.paginator.num_pages }}
+        </span>
+
+        {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}"
+               style="margin: 0 5px; color: #4361ee; text-decoration: none;">Вперед ›</a>
+            <a href="?page={{ page_obj.paginator.num_pages }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}"
+               style="margin: 0 5px; color: #4361ee; text-decoration: none;">Последняя »</a>
+        {% endif %}
+    </div>
+    {% endif %}
+</div>
+{% endif %}
+
+<!-- Нет результатов -->
+{% if request.GET and not news %}
+<div class="auth-card" style="max-width: 800px; margin-top: 30px;">
+    <p style="text-align: center; color: #666; padding: 20px;">
+        🔍 Ничего не найдено по вашим критериям. Попробуйте изменить параметры поиска.
+    </p>
+</div>
+{% endif %}
+{% endblock %}
