@@ -143,7 +143,7 @@ ZeroDivisionError: division by zero
 
 ![logs -> email](/img/err_request.png)
 ![logs -> email](/img/err_server.png)
-* Скриншот 4: Email-уведом`ление об ошибке
+* Скриншот 4: Email-уведомление об ошибке
 
 ### ✅ Требование 1: Консольный вывод
 
