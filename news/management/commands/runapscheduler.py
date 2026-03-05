@@ -4,6 +4,7 @@ import logging
 from django.conf import settings
 from apscheduler.schedulers.blocking import BlockingScheduler
 from apscheduler.triggers.cron import CronTrigger
+from apscheduler.triggers.interval import IntervalTrigger
 from django.core.management.base import BaseCommand
 from django_apscheduler.jobstores import DjangoJobStore
 from django_apscheduler.models import DjangoJobExecution
@@ -33,7 +34,8 @@ class Command(BaseCommand):
         # =====================================================================
         scheduler.add_job(
             send_weekly_digest,
-            trigger=CronTrigger(day_of_week="mon", hour="9", minute="0"),
+            # trigger=CronTrigger(day_of_week="mon", hour="9", minute="0"),
+            trigger=IntervalTrigger(minutes=1),  # ← Каждую минуту!
             id="weekly_digest_job",
             max_instances=1,
             replace_existing=True,
