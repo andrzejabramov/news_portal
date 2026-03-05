@@ -120,8 +120,8 @@ cat logs/general.log
 # 4. Проверить структуру
 ls -la logs/
 ```
-Ожидаемый вывод в консоль (при DEBUG=True):
-```commandline
+* Ожидаемый вывод в консоль (при DEBUG=True):
+```
 🧪 Тестирование логирования...
 ✅ Тестирование завершено!
 
@@ -134,7 +134,8 @@ Traceback (most recent call last):
     ~~^~~
 ZeroDivisionError: division by zero
 ```
-Скриншоты выполнения:
+### Скриншоты выполнения:
+
 (Здесь будут вставлены скриншоты)
 
 Скриншот 1: Запуск теста в консоли
@@ -145,20 +146,16 @@ ZeroDivisionError: division by zero
 
 Скриншот 4: Email-уведомление об ошибке
 
-✅ Требование 1: Консольный вывод
-Реализация:
+### ✅ Требование 1: Консольный вывод
 
-Создан кастомный обработчик LevelBasedConsoleHandler
+#### Реализация:
 
-Разные форматы для разных уровней:
-
-DEBUG/INFO: время | уровень | сообщение
-
-WARNING+: время | уровень | pathname | сообщение
-
-ERROR+: время | уровень | pathname | сообщение + exc_info
-
-Фильтр debug_only - только при DEBUG=True
+* Создан кастомный обработчик LevelBasedConsoleHandler
+* Разные форматы для разных уровней:
+* DEBUG/INFO: время | уровень | сообщение
+* WARNING+: время | уровень | pathname | сообщение
+* ERROR+: время | уровень | pathname | сообщение + exc_info
+* Фильтр debug_only - только при DEBUG=True
 
 Код из log_handlers.py:
 ```commandline
@@ -188,16 +185,13 @@ class LevelBasedConsoleHandler(logging.StreamHandler):
             ),
         }
 ```
-✅ Требование 2: Файл general.log
-Реализация:
+### ✅ Требование 2: Файл general.log
+#### Реализация:
 
-Уровень: INFO и выше
-
-Формат: {asctime} | {levelname} | {module} | {message}
-
-Фильтр production_only - только при DEBUG=False
-
-Ротация файла (10 MB, 5 бэкапов)
+* Уровень: INFO и выше
+* Формат: {asctime} | {levelname} | {module} | {message}
+* Фильтр production_only - только при DEBUG=False
+* Ротация файла (10 MB, 5 бэкапов)
 
 Код из settings.py:
 ```commandline
@@ -211,18 +205,15 @@ class LevelBasedConsoleHandler(logging.StreamHandler):
     'filters': ['production_only'],
 }
 ```
-✅ Требование 3: Файл errors.log
-Реализация:
+### ✅ Требование 3: Файл errors.log
+#### Реализация:
 
-Уровень: ERROR и CRITICAL
+* Уровень: ERROR и CRITICAL
+* Только из логгеров: django.request, django.server, django.template, django.db.backends
+* Формат: {asctime} | {levelname} | {message} | {pathname}\n{exc_info}
+* Фильтр error_log_filter
 
-Только из логгеров: django.request, django.server, django.template, django.db.backends
-
-Формат: {asctime} | {levelname} | {message} | {pathname}\n{exc_info}
-
-Фильтр error_log_filter
-
-Код из log_filters.py:
+#### Код из log_filters.py:
 ```commandline
 class ErrorLogFilter(logging.Filter):
     allowed_loggers = {'django.request', 'django.server', 'django.template', 'django.db.backends'}
@@ -232,35 +223,29 @@ class ErrorLogFilter(logging.Filter):
         level_allowed = record.levelno >= logging.ERROR
         return logger_name_allowed and level_allowed
 ```
-✅ Требование 4: Файл security.log
-Реализация:
+### ✅ Требование 4: Файл security.log
+#### Реализация:
 
-Только из логгера django.security
+* Только из логгера django.security
+* Формат: {asctime} | {levelname} | {module} | {message}
+* Фильтр security_log_filter
 
-Формат: {asctime} | {levelname} | {module} | {message}
-
-Фильтр security_log_filter
-
-Код из log_filters.py:
+#### Код из log_filters.py:
 ```commandline
 class SecurityLogFilter(logging.Filter):
     def filter(self, record):
         return record.name.startswith('django.security')
 ```
-✅ Требование 5: Email для ошибок
-Реализация:
+### ✅ Требование 5: Email для ошибок
+#### Реализация:
 
-Уровень: ERROR и выше
+* Уровень: ERROR и выше
+* Только из логгеров: django.request, django.server
+* Формат: {asctime} | {levelname} | {message} | {pathname} (без exc_info)
+* Фильтр production_only - только при DEBUG=False
+* Настроены ADMINS
 
-Только из логгеров: django.request, django.server
-
-Формат: {asctime} | {levelname} | {message} | {pathname} (без exc_info)
-
-Фильтр production_only - только при DEBUG=False
-
-Настроены ADMINS
-
-Код из settings.py:
+#### Код из settings.py:
 ```commandline
 # Настройки email
 ADMINS = [('Admin', 'admin@example.com')]
@@ -279,14 +264,13 @@ EMAIL_HOST_PASSWORD = 'your-password'
     'filters': ['production_only'],
 }
 ```
-✅ Требование 6: Фильтры по режиму DEBUG
-Реализация:
+### ✅ Требование 6: Фильтры по режиму DEBUG
+#### Реализация:
 
-debug_only: пропускает записи только при DEBUG=True
+* debug_only: пропускает записи только при DEBUG=True
+* production_only: пропускает записи только при DEBUG=False
 
-production_only: пропускает записи только при DEBUG=False
-
-Код из log_filters.py:
+#### Код из log_filters.py:
 ```commandline
 class DebugFilter(logging.Filter):
     def __init__(self):
@@ -304,8 +288,8 @@ class ProductionFilter(logging.Filter):
     def filter(self, record):
         return not self.debug
 ```
-5. Результаты выполнения (отчет)
-📊 Итоговая таблица выполнения
+### 5. Результаты выполнения (отчет)
+#### 📊 Итоговая таблица выполнения
 ```commandline
 
 №	Требование	Реализация	Статус
@@ -316,8 +300,8 @@ class ProductionFilter(logging.Filter):
 5	Email (ERROR+, DEBUG=False)	Время, уровень, сообщение, pathname	✅
 6	Фильтры DEBUG/production	debug_only / production_only	✅
 ```
-При DEBUG=True:
-```commandline
+* При DEBUG=True:
+
 Канал	Результат	Причина
 Консоль	✅ Все сообщения	debug_only пропускает
 general.log	❌ Пустой	production_only блокирует
@@ -325,8 +309,8 @@ errors.log	✅ Ошибки от указанных логгеров	error_log_f
 security.log	✅ Сообщения безопасности	security_log_filter работает
 Email	❌ Не отправляются	production_only блокирует
 
-```
-При DEBUG=False:
+
+* При DEBUG=False:
 ```commandline
 Канал	Результат	Причина
 Консоль	❌ Пустая	debug_only блокирует
@@ -335,14 +319,14 @@ errors.log	✅ Ошибки от указанных логгеров	error_log_f
 security.log	✅ Сообщения безопасности	security_log_filter работает
 Email	✅ Ошибки от request и server	production_only пропускает
 ```
-📁 Созданные файлы логов
+#### 📁 Созданные файлы логов
 ```commandline
 logs/
 ├── general.log      # 0 байт (при DEBUG=True) / есть записи (при DEBUG=False)
 ├── errors.log       # ~700 байт (ошибки от специальных логгеров)
 └── security.log     # ~180 байт (сообщения безопасности)
 ```
-📧 Пример email-уведомления
+#### 📧 Пример email-уведомления
 ```commandline
 Content-Type: text/plain
 Subject: [NewsPortal] ERROR (EXTERNAL IP): 🔥 Request error
@@ -358,22 +342,18 @@ Installed Middleware:
 ['django.middleware.security.SecurityMiddleware', ...]
 -------------------------------------------------------------------------------
 ```
-🏆 Заключение
-Задание 4.1 выполнено полностью! Все требования реализованы:
+## 🏆 Заключение
+
+#### Задание 4.1 выполнено полностью! Все требования реализованы:
 
 ✅ Настроен многоуровневый вывод в консоль с разными форматами
-
 ✅ Создан файл general.log с INFO+ сообщениями (только в production)
-
 ✅ Создан файл errors.log с ERROR+ из указанных логгеров
-
 ✅ Создан файл security.log для сообщений безопасности
-
 ✅ Настроены email-уведомления об ошибках (только в production)
-
 ✅ Реализованы фильтры для DEBUG/production режимов
 
-Система логирования полностью готова к использованию как в разработке, так и в продакшене.
+#### Система логирования полностью готова к использованию как в разработке, так и в продакшене.
 
 Дата выполнения: 5 марта 2026
 Исполнитель: Андрей Абрамов
