@@ -290,25 +290,25 @@ class ProductionFilter(logging.Filter):
 ```
 ### 5. Результаты выполнения (отчет)
 #### 📊 Итоговая таблица выполнения
-```commandline
 
-№	Требование	Реализация	Статус
-1	Консоль (DEBUG=True)	Разные форматы для разных уровней	✅
-2	general.log (INFO+, DEBUG=False)	Время, уровень, модуль, сообщение	✅
-3	errors.log (ERROR+, спец.логгеры)	Время, уровень, сообщение, pathname, exc_info	✅
-4	security.log (django.security)	Время, уровень, модуль, сообщение	✅
-5	Email (ERROR+, DEBUG=False)	Время, уровень, сообщение, pathname	✅
-6	Фильтры DEBUG/production	debug_only / production_only	✅
-```
+|№	| Требование	| Реализация	| Статус |
+|---|---------------|---------------|-------|
+|1	| Консоль (DEBUG=True)	| Разные форматы для разных уровней	| ✅ |
+|2	| general.log (INFO+, DEBUG=False)	| Время, уровень, модуль, сообщение	| ✅ |
+|3	| errors.log (ERROR+, спец.логгеры)	| Время, уровень, сообщение, pathname, exc_info	| ✅ |
+|4	| security.log (django.security)	| Время, уровень, модуль, сообщение	| ✅ |
+|5	| Email (ERROR+, DEBUG=False)	| Время, уровень, сообщение, pathname	| ✅ |
+|6	| Фильтры DEBUG/production	| debug_only / production_only	| ✅ |
+
 * При DEBUG=True:
 
-Канал	| Результат |	Причина |
---------|-----------|------------|
-Консоль	 | ✅ Все сообщения	| debug_only пропускает |
-general.log	| ❌ Пустой	| production_only блокирует |
-errors.log	| ✅ Ошибки от указанных логгеров	| error_log_filter работает |
-security.log	| ✅ Сообщения безопасности	| security_log_filter работает |
-Email	| ❌ Не отправляются	| production_only блокирует |
+| Канал	        | Результат |	Причина |
+|---------------|-----------|------------|
+| Консоль	      | ✅ Все сообщения	| debug_only пропускает |
+| general.log	  | ❌ Пустой	| production_only блокирует |
+| errors.log	   | ✅ Ошибки от указанных логгеров	| error_log_filter работает |
+| security.log	 | ✅ Сообщения безопасности	| security_log_filter работает |
+|  Email	       | ❌ Не отправляются	| production_only блокирует |
 
 * При DEBUG=False:
 ```commandline
