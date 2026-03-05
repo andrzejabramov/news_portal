@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
+import os
 from pathlib import Path
 from decouple import config
 from pathlib import Path
@@ -25,9 +26,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = config('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = config('DEBUG', default=True, cast=bool)
+# DEBUG = config('DEBUG', default=True, cast=bool)
 
-ALLOWED_HOSTS = []
+# ALLOWED_HOSTS = []
+
+DEBUG = False
+ALLOWED_HOSTS = ['localhost', '127.0.0.1']  # добавить для теста
 
 
 # Application definition
@@ -200,6 +204,11 @@ SOCIALACCOUNT_ADAPTER = 'accounts.adapter.AutoConnectSocialAccountAdapter'
 # EMAIL SETTINGS (для рассылок и уведомлений)
 # =============================================================================
 
+ADMINS = [
+    ('Admin', 'npkap@mail.ru'),  # свой email для теста
+]
+
+
 EMAIL_BACKEND = config('EMAIL_BACKEND', default='django.core.mail.backends.console.EmailBackend')
 EMAIL_HOST = config('EMAIL_HOST', default='smtp.yandex.ru')
 EMAIL_PORT = config('EMAIL_PORT', default=465, cast=int)
@@ -242,3 +251,185 @@ CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'
 # Важно для предотвращения зависаний
 CELERY_TASK_TRACK_STARTED = True
 CELERY_TASK_TIME_LIMIT = 30 * 60  # 30 минут
+
+# =============================================================================
+# LOGGING CONFIGURATION
+# =============================================================================
+
+# Создаём директорию для логов, если её нет
+LOG_DIR = os.path.join(BASE_DIR, 'logs')
+if not os.path.exists(LOG_DIR):
+    os.makedirs(LOG_DIR)
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+
+    # Фильтры
+    'filters': {
+        'debug_only': {
+            '()': 'pr_settings.log_filters.DebugFilter',
+        },
+        'production_only': {
+            '()': 'pr_settings.log_filters.ProductionFilter',
+        },
+        'error_log_filter': {
+            '()': 'pr_settings.log_filters.ErrorLogFilter',
+        },
+        'security_log_filter': {
+            '()': 'pr_settings.log_filters.SecurityLogFilter',
+        },
+    },
+
+    # Форматтеры
+    'formatters': {
+        'general': {
+            'format': '{asctime} | {levelname} | {module} | {message}',
+            'style': '{',
+            'datefmt': '%Y-%m-%d %H:%M:%S',
+        },
+        'errors': {
+            'format': '{asctime} | {levelname} | {message} | {pathname}\n{exc_info}',
+            'style': '{',
+            'datefmt': '%Y-%m-%d %H:%M:%S',
+        },
+        'security': {
+            'format': '{asctime} | {levelname} | {module} | {message}',
+            'style': '{',
+            'datefmt': '%Y-%m-%d %H:%M:%S',
+        },
+        'email': {
+            'format': '{asctime} | {levelname} | {message} | {pathname}',
+            'style': '{',
+            'datefmt': '%Y-%m-%d %H:%M:%S',
+        },
+    },
+
+    # 👇 ОБРАБОТЧИКИ
+    'handlers': {
+        'console': {
+            'level': 'DEBUG',
+            'class': 'pr_settings.log_handlers.LevelBasedConsoleHandler',  # из шага 4
+            'filters': ['debug_only'],
+        },
+        'general_file': {
+            'level': 'INFO',
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': os.path.join(LOG_DIR, 'general.log'),
+            'maxBytes': 10485760,
+            'backupCount': 5,
+            'formatter': 'general',
+            'filters': ['production_only'],
+        },
+        'errors_file': {
+            'level': 'ERROR',
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': os.path.join(LOG_DIR, 'errors.log'),
+            'maxBytes': 10485760,
+            'backupCount': 5,
+            'formatter': 'errors',
+            'filters': ['error_log_filter'],
+        },
+        'security_file': {
+            'level': 'DEBUG',
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': os.path.join(LOG_DIR, 'security.log'),
+            'maxBytes': 10485760,
+            'backupCount': 5,
+            'formatter': 'security',
+            'filters': ['security_log_filter'],
+        },
+        'mail_admins': {
+            'level': 'ERROR',
+            'class': 'django.utils.log.AdminEmailHandler',
+            'formatter': 'email',
+            'filters': ['production_only'],
+        },
+    },
+
+    # Файл general.log
+    'general_file': {
+        'level': 'INFO',
+        'class': 'logging.handlers.RotatingFileHandler',
+        'filename': os.path.join(LOG_DIR, 'general.log'),
+        'maxBytes': 10485760,
+        'backupCount': 5,
+        'formatter': 'general',
+        'filters': ['production_only'],  # только при DEBUG=False
+    },
+
+    # Файл errors.log
+    'errors_file': {
+        'level': 'ERROR',
+        'class': 'logging.handlers.RotatingFileHandler',
+        'filename': os.path.join(LOG_DIR, 'errors.log'),
+        'maxBytes': 10485760,
+        'backupCount': 5,
+        'formatter': 'errors',
+        'filters': ['error_log_filter'],
+    },
+
+    # Файл security.log
+    'security_file': {
+        'level': 'DEBUG',
+        'class': 'logging.handlers.RotatingFileHandler',
+        'filename': os.path.join(LOG_DIR, 'security.log'),
+        'maxBytes': 10485760,
+        'backupCount': 5,
+        'formatter': 'security',
+        'filters': ['security_log_filter'],
+    },
+
+    # Email
+    'mail_admins': {
+        'level': 'ERROR',
+        'class': 'django.utils.log.AdminEmailHandler',
+        'formatter': 'email',
+        'filters': ['production_only'],
+    },
+
+    # Логгеры
+    'loggers':{
+        'django': {
+            'handlers': ['console', 'general_file'],
+            'level': 'DEBUG',
+            'propagate': False,
+        },
+        'django.request': {
+            'handlers': ['errors_file', 'mail_admins'],
+            'level': 'ERROR',
+            'propagate': False,
+        },
+        'django.server': {
+            'handlers': ['errors_file', 'mail_admins'],
+            'level': 'ERROR',
+            'propagate': False,
+        },
+        'django.template': {
+            'handlers': ['errors_file'],
+            'level': 'ERROR',
+            'propagate': False,
+        },
+        'django.db.backends': {
+            'handlers': ['errors_file'],
+            'level': 'ERROR',
+            'propagate': False,
+        },
+        'django.security': {
+            'handlers': ['security_file'],
+            'level': 'DEBUG',
+            'propagate': False,
+        },
+        'allauth': {
+            'level': 'DEBUG',
+            'handlers': ['console'],
+            'propagate': False,
+        },
+        'allauth.socialaccount': {
+            'level': 'DEBUG',
+            'handlers': ['console'],
+            'propagate': False,
+        },
+    },
+}
+
