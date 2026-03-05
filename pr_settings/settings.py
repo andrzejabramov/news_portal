@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     'accounts',
     'django_filters',
     'django_apscheduler',
+    'django_celery_beat',
 ]
 
 SITE_ID = 1
@@ -220,3 +221,24 @@ APSCHEDULER_RUN_NOW_TIMEOUT = 25
 APSCHEDULER_MAX_EXECUTIONS = 1
 
 SITE_URL = config('SITE_URL', default='http://127.0.0.1:8000')
+
+# =============================================================================
+# CELERY CONFIGURATION
+# =============================================================================
+
+# URL Redis (локальный по умолчанию)
+CELERY_BROKER_URL = 'redis://localhost:6379/0'
+CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
+
+# Настройки сериализации
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_TIMEZONE = TIME_ZONE
+
+# Настройки для периодических задач (beat)
+CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'
+
+# Важно для предотвращения зависаний
+CELERY_TASK_TRACK_STARTED = True
+CELERY_TASK_TIME_LIMIT = 30 * 60  # 30 минут

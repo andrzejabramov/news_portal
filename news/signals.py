@@ -1,10 +1,11 @@
-## news/signals.py
-
 import logging
 from django.db.models.signals import post_save, m2m_changed
 from django.dispatch import receiver
+from django.utils import timezone
+from datetime import timedelta
 from news.models import Post, UserCategorySubscription
 from news.utils.email import send_new_post_notification
+from news.tasks import send_new_post_notifications as send_new_post_notifications_task  # Celery задача
 
 logger = logging.getLogger(__name__)
 
@@ -13,6 +14,7 @@ def _send_notification_if_ready(post):
     """
     Внутренняя функция отправки уведомлений.
     Вызывается из разных сигналов (post_save, m2m_changed).
+    Использует Celery для асинхронной отправки.
     """
     try:
         # Получаем все категории этого поста
@@ -32,16 +34,16 @@ def _send_notification_if_ready(post):
             logger.debug(f"No active subscribers for post {post.pk} categories")
             return
 
-        # Отправляем уведомления
-        result = send_new_post_notification(post, subscribers)
+        # АСИНХРОННАЯ ОТПРАВКА через Celery
+        # Передаём ID поста, Celery задача сама загрузит данные и отправит письма
+        send_new_post_notifications_task.delay(post.pk)
 
         logger.info(
-            f"Notifications for post '{post.title}': "
-            f"sent={result['sent']}, failed={result['failed']}"
+            f"Notification task queued for post '{post.title}' (ID: {post.pk})"
         )
 
     except Exception as e:
-        logger.error(f"Failed to send post notifications: {type(e).__name__}: {e}", exc_info=True)
+        logger.error(f"Failed to queue post notifications: {type(e).__name__}: {e}", exc_info=True)
 
 
 @receiver(post_save, sender=Post)
@@ -67,9 +69,6 @@ def notify_on_category_change(sender, instance, action, **kwargs):
         logger.info(f"Categories added to post: {instance.title} (pk={instance.pk})")
 
         # Защита: не отправляем, если пост создан давно (чтобы не спамить при редактировании)
-        from django.utils import timezone
-        from datetime import timedelta
-
         if timezone.now() - instance.created_at < timedelta(minutes=30):
             _send_notification_if_ready(instance)
         else:
